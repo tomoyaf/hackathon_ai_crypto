@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import { Header } from "@/components";
+import { Header, BottomNav } from "@/components";
 
 export default function IndexPage() {
   return (
@@ -11,6 +11,7 @@ export default function IndexPage() {
       overflowY="scroll"
     >
       <Header />
+      <BottomNav />
     </Box>
   );
 }
