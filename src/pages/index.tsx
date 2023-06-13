@@ -1,17 +1,14 @@
 import { Box } from "@chakra-ui/react";
-import { Header, BottomNav } from "@/components";
+import { Header, BottomNav, Layout } from "@/components";
 
 export default function IndexPage() {
   return (
     <Box
-      bg="rgb(2 6 23 / 1)"
+      className="snap-y snap-mandatory hidden-scrollbar"
       h="100vh"
-      color="rgb(241 245 249 / 1)"
-      pos="relative"
       overflowY="scroll"
-    >
-      <Header />
-      <BottomNav />
-    </Box>
+    ></Box>
   );
 }
+
+IndexPage.getLayout = (page: any) => <Layout>{page}</Layout>;
