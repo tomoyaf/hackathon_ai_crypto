@@ -1,13 +1,13 @@
-import { Box } from "@chakra-ui/react";
+import { k } from "@kuma-ui/core";
 import { Header, BottomNav, Layout } from "@/components";
 
 export default function IndexPage() {
   return (
-    <Box
+    <k.div
       className="snap-y snap-mandatory hidden-scrollbar"
-      h="100vh"
-      overflowY="scroll"
-    ></Box>
+      height="100vh"
+      style={{ overflowY: "scroll" }}
+    ></k.div>
   );
 }
 

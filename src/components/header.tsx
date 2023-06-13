@@ -1,15 +1,19 @@
 import Link from "next/link";
 import React from "react";
+import { css } from "@kuma-ui/core";
+import classNames from "classnames";
 
 export type HeaderProps = {};
 
 export const Header: React.FC<HeaderProps> = () => {
   return (
     <nav
-      className="fixed top-0 w-screen z-30"
-      style={{
-        background: `linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%)`,
-      }}
+      className={classNames(
+        css({
+          bg: "linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%)",
+        }),
+        "fixed top-0 w-screen z-30"
+      )}
     >
       <ol className="flex justify-around items-center w-[85%] m-auto">
         <li className="flex-1 flex h-[60px] justify-center items-center relative">
