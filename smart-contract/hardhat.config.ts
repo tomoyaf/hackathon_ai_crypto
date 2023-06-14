@@ -1,9 +1,7 @@
-import {HardhatUserConfig} from 'hardhat/config'
+import '@typechain/hardhat'
+import '@nomiclabs/hardhat-ethers'
 import '@openzeppelin/hardhat-upgrades'
-import '@nomiclabs/hardhat-waffle'
-
-// 一旦はetherscanを使わない
-// import '@nomiclabs/hardhat-etherscan'
+import {HardhatUserConfig} from 'hardhat/config'
 
 const config: HardhatUserConfig = {
   solidity: '0.8.18'

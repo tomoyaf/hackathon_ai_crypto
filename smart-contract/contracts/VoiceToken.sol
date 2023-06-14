@@ -12,10 +12,11 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     CountersUpgradeable.Counter private _tokenIdCounter;
-    // tokenId => count
-    mapping(uint256 => uint256) private _downvotes;
-    // userId => tokenId => hasVoted
-    mapping(address => mapping(uint256 => bool)) private _voted;
+
+    mapping(uint256 => address) private _royaltyReceivers;
+    mapping(uint256 => uint256) private _royaltyRates;
+
+    event RoyaltiesSet(uint256 indexed tokenId, address indexed recipient, uint256 value);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -29,39 +30,28 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         __Ownable_init();
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint(address to, string memory uri, address royaltyReceiver, uint256 royaltyRate) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+        _setRoyalties(tokenId, royaltyReceiver, royaltyRate);
     }
 
-    function downvote(uint256 tokenId) public {
-        require(!_voted[msg.sender][tokenId], "You have already voted.");
+    function _setRoyalties(uint256 tokenId, address royaltyReceiver, uint256 royaltyRate) internal {
+        require(royaltyRate <= 10000, "Royalty rate is too high"); // 10000 means 100%, as rate is in basis points
+        _royaltyReceivers[tokenId] = royaltyReceiver;
+        _royaltyRates[tokenId] = royaltyRate;
 
-        _downvotes[tokenId]++;
-        _voted[msg.sender][tokenId] = true;
+        emit RoyaltiesSet(tokenId, royaltyReceiver, royaltyRate);
     }
 
-    function getDownvotes(uint256 tokenId) public view onlyOwner returns (uint256) {
-        return _downvotes[tokenId];
+    function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
+        uint256 royaltyRate = _royaltyRates[tokenId];
+        uint256 royalty = (salePrice * royaltyRate) / 10000; // as royaltyRate is in basis points
+
+        return (_royaltyReceivers[tokenId], royalty);
     }
-
-    function hasVoted(uint256 tokenId) public view returns (bool) {
-        return _voted[msg.sender][tokenId];
-    }
-
-    function getDownvotesForMultipleTokens(uint256[] memory tokenIds) public view onlyOwner returns (uint256[] memory) {
-        uint256[] memory downvotes = new uint256[](tokenIds.length);
-
-        for (uint256 i = 0; i < tokenIds.length; i++) {
-            downvotes[i] = _downvotes[tokenIds[i]];
-        }
-
-        return downvotes;
-    }
-
-    // The following functions are overrides required by Solidity.
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
         internal
@@ -92,6 +82,6 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         override(ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return super.supportsInterface(interfaceId) || interfaceId == 0x2a55205a; // 0x2a55205a is the interface ID for ERC2981
     }
 }
