@@ -1,8 +1,7 @@
+import { Layout } from "@/components";
+import { k } from "@kuma-ui/core";
 import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
-import { signIn, useSession } from "next-auth/react";
-import { k } from "@kuma-ui/core";
-import { Header, BottomNav, Layout } from "@/components";
 
 export default function IndexPage() {
   const items = useFeedItems();
@@ -11,10 +10,11 @@ export default function IndexPage() {
     <k.div
       className="snap-y snap-mandatory hidden-scrollbar"
       height="100vh"
-      style={{ overflowY: "scroll" }}
+      overflow-y="scroll"
     >
-      <p>サンプル曲をリスト表示して再生できる</p>
-      <p>声リンクをクリックで声詳細ページに遷移</p>
+      <p>声詳細ページ</p>
+      <p>声NFTを購入することができる</p>
+      <p>eth連携してない場合は連携処理する</p>
     </k.div>
   );
 }

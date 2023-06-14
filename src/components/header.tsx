@@ -1,11 +1,15 @@
+import classNames from "classnames";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 import { css } from "@kuma-ui/core";
-import classNames from "classnames";
 
 export type HeaderProps = {};
 
 export const Header: React.FC<HeaderProps> = () => {
+  const router = useRouter();
+  const isVoiceModelTab = router.pathname === "/voices";
+
   return (
     <nav
       className={classNames(
@@ -19,18 +23,31 @@ export const Header: React.FC<HeaderProps> = () => {
         <li className="flex-1 flex h-[60px] justify-center items-center relative">
           <Link
             href="/"
-            className="flex text-sm h-[48px] w-full justify-center items-center flex-col gap-[2px] drop-shadow-xl font-bold"
+            className={classNames(
+              "flex text-sm h-[48px] w-full justify-center items-center flex-col gap-[2px] drop-shadow-xl",
+              { "font-bold": !isVoiceModelTab }
+            )}
           >
-            おすすめ
+            サンプル曲
           </Link>
-          <div className="w-[calc(100%-36px)] h-[2px] bg-slate-50 absolute bottom-3 rounded-full" />
+          <div
+            className="w-[calc(100%-36px)] h-[2px] bg-slate-50 absolute bottom-3 rounded-full transition-transform"
+            style={{
+              transform: isVoiceModelTab
+                ? "translateX(42.5vw)"
+                : "translateX(0)",
+            }}
+          />
         </li>
         <li className="flex-1 flex h-[60px] justify-center items-center">
           <Link
-            href="/"
-            className="flex text-sm h-[48px] w-full justify-center items-center flex-col gap-[2px] drop-shadow-xl"
+            href="/voices"
+            className={classNames(
+              "flex text-sm h-[48px] w-full justify-center items-center flex-col gap-[2px] drop-shadow-xl",
+              { "font-bold": isVoiceModelTab }
+            )}
           >
-            プレイリスト
+            声モデル
           </Link>
         </li>
       </ol>

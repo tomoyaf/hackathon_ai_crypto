@@ -2,12 +2,13 @@ import { styled, k } from "@kuma-ui/core";
 import { Header, BottomNav } from "@/components";
 import React from "react";
 
-export const Layout: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const Layout: React.FC<{
+  children: React.ReactNode;
+  withHeader?: boolean;
+}> = ({ children, withHeader }) => {
   return (
     <Wrapper>
-      <Header />
+      {withHeader && <Header />}
       <k.main height="100vh">{children}</k.main>
       <BottomNav />
     </Wrapper>
