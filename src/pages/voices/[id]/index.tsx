@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/react";
 import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
-import { signIn, useSession } from "next-auth/react";
 
 export default function IndexPage() {
   const items = useFeedItems();
@@ -13,8 +12,9 @@ export default function IndexPage() {
       h="100vh"
       overflowY="scroll"
     >
-      <p>サンプル曲をリスト表示して再生できる</p>
-      <p>声リンクをクリックで声詳細ページに遷移</p>
+      <p>声詳細ページ</p>
+      <p>声NFTを購入することができる</p>
+      <p>eth連携してない場合は連携処理する</p>
     </Box>
   );
 }
