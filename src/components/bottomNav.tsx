@@ -14,6 +14,8 @@ import classNames from "classnames";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
+import { css, k, styled } from "@kuma-ui/core";
+import { FloatingBar } from "./floatingBar";
 
 export type BottomNavProps = {};
 
@@ -64,31 +66,39 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
   ];
 
   return (
-    <nav
-      className={classNames("fixed", "bottom-0", "w-screen")}
-      style={{
-        background: `linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.98) 100%)`,
-      }}
+    <k.div
+      position="fixed"
+      bottom="0px"
+      width="100%"
+      display="flex"
+      flexDir="column"
     >
-      <ol className="flex justify-around items-center">
-        {links.map((link) => (
-          <li key={link.url} className="flex-1">
-            <Link
-              href={link.url}
-              className="flex h-[54px] w-full justify-center items-center flex-col gap-[1px]"
-            >
-              {link.renderIcon({ isSelected: link.url === router.pathname })}
-              <span
-                className={classNames("text-slate-200 text-[11px]", {
-                  "font-bold": link.url === router.pathname,
-                })}
+      <FloatingBar />
+      <nav
+        className={css({
+          bg: "linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.98) 100%)",
+        })}
+      >
+        <ol className="flex justify-around items-center">
+          {links.map((link) => (
+            <li key={link.url} className="flex-1">
+              <Link
+                href={link.url}
+                className="flex h-[54px] w-full justify-center items-center flex-col gap-[1px]"
               >
-                {link.label}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ol>
-    </nav>
+                {link.renderIcon({ isSelected: link.url === router.pathname })}
+                <span
+                  className={classNames("text-slate-200 text-[11px]", {
+                    "font-bold": link.url === router.pathname,
+                  })}
+                >
+                  {link.label}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </k.div>
   );
 };
