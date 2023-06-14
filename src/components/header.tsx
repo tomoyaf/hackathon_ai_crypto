@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { css } from "@kuma-ui/core";
-import classNames from "classnames";
 
 export type HeaderProps = {};
 

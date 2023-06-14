@@ -1,14 +1,14 @@
-import { Box } from "@chakra-ui/react";
+import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
 
 export default function SearchPage() {
   return (
-    <Box
+    <k.div
       className="snap-y snap-mandatory hidden-scrollbar"
-      h="100vh"
-      overflowY="scroll"
+      height="100vh"
+      overflow-y="scroll"
     >
       <p>eth連携してない場合は連携処理する</p>
       <p>声モデルを投稿</p>
@@ -16,7 +16,7 @@ export default function SearchPage() {
       <p>・タイトル</p>
       <p>・詳細</p>
       <p>・サムネ画像</p>
-    </Box>
+    </k.div>
   );
 }
 
