@@ -20,3 +20,5 @@ export default function IndexPage() {
 }
 
 IndexPage.getLayout = (page: any) => <Layout withHeader>{page}</Layout>;
+
+const mock = [{}];
