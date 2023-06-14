@@ -1,21 +1,21 @@
-import { Box } from "@chakra-ui/react";
-import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
 import { signIn, useSession } from "next-auth/react";
+import { k } from "@kuma-ui/core";
+import { Header, BottomNav, Layout } from "@/components";
 
 export default function IndexPage() {
   const items = useFeedItems();
 
   return (
-    <Box
+    <k.div
       className="snap-y snap-mandatory hidden-scrollbar"
-      h="100vh"
-      overflowY="scroll"
+      height="100vh"
+      style={{ overflowY: "scroll" }}
     >
       <p>サンプル曲をリスト表示して再生できる</p>
       <p>声リンクをクリックで声詳細ページに遷移</p>
-    </Box>
+    </k.div>
   );
 }
 

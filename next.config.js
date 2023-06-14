@@ -1,4 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
+// import { withKumaUI } from "@kuma-ui/next-plugin";
+const { withKumaUI } = require("@kuma-ui/next-plugin");
 
-module.exports = nextConfig
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+module.exports = withKumaUI(nextConfig);
