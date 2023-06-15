@@ -45,7 +45,7 @@ export const ListItem = () => {
             mr="16px"
             flexShrink={0}
           />
-          <k.div fontSize="1rem" fontWeight={400} color="#f81c55">
+          <k.div fontSize="1rem" fontWeight={400} color="white">
             残機
           </k.div>
         </k.div>
