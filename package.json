@@ -15,7 +15,7 @@
     "@google-cloud/storage": "^6.11.0",
     "@heroicons/react": "^2.0.18",
     "@kuma-ui/core": "^0.4.1",
-    "@kuma-ui/next-plugin": "^0.6.1",
+    "@kuma-ui/next-plugin": "^0.7.0",
     "@prisma/client": "^4.15.0",
     "@types/node": "20.2.6",
     "@types/react": "18.2.9",
