@@ -84,7 +84,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         _mintableItems[voiceId] = item;
     }
 
-    function calcMintPrice(uint256 price) internal pure returns (uint256, uint256) {
+    function calcMintPrice(uint256 price) private pure returns (uint256, uint256) {
         uint256 ownerCommision = (price * MINT_COMMISSION_RATE) / 10000;
         return (price, ownerCommision);
     }
@@ -95,7 +95,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         return price + ownerCommision;
     }
 
-    function transferMintFee(uint256 voiceId) internal {
+    function transferMintFee(uint256 voiceId) private {
         MintableItem memory item = _mintableItems[voiceId];
         (uint256 price, uint256 ownerCommision) = calcMintPrice(item.price);
         require(msg.value == (price + ownerCommision), "Invalid price");
