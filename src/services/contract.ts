@@ -25,7 +25,7 @@ type VoiceTokenType = Omit<VoiceToken, keyof ethers.BaseContract> &
   ethers.Contract;
 export async function connectContract() {
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://rpc-mumbai.maticvigil.com"
+    process.env.CHAIN_RPC_URL || ""
   );
   console.log(process.env.OWNER_PRIVATE_KEY);
   const ownerWallet = new ethers.Wallet(
@@ -55,21 +55,21 @@ export async function mint(
 }
 
 // debug code
-// import dotenv from "dotenv";
-// dotenv.config();
-// async function main() {
-//   const tokenUrl = await createTokenUrl({
-//     name: "test voice token",
-//     description: "test",
-//     image: "https://avatars.githubusercontent.com/u/11766432?v=4",
-//   });
+import dotenv from "dotenv";
+dotenv.config();
+async function main() {
+  const tokenUrl = await createTokenUrl({
+    name: "test voice token2",
+    description: "test",
+    image: "https://avatars.githubusercontent.com/u/11766432?v=4",
+  });
 
-//   const result = await mint(
-//     "0x4a8fdC7086552f7E4605168586A93Adc267dca81",
-//     tokenUrl,
-//     1000
-//   );
-//   console.log(result);
-// }
+  const result = await mint(
+    "0x4a8fdC7086552f7E4605168586A93Adc267dca81",
+    tokenUrl,
+    1000
+  );
+  console.log(result);
+}
 
-// main();
+main();

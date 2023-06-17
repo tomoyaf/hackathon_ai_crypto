@@ -12,11 +12,25 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     CountersUpgradeable.Counter private _tokenIdCounter;
+    CountersUpgradeable.Counter private _voiceIdCounter;
 
-    mapping(uint256 => address) private _royaltyReceivers;
-    mapping(uint256 => uint256) private _royaltyRates;
+    uint256 private constant ADD_ITEM_PRICE = 5 ether; // 5 matic
+    uint256 private constant MINT_COMMISSION_RATE = 500; // 5%
+
+    struct MintableItem {
+        address royaltyReceiver;
+        uint256 royaltyRate;
+        uint256 price;
+        string tokenURI;
+        bool accepted;
+    }
+
+    mapping(uint256 => MintableItem) private _mintableItems;
+    mapping(uint256 => uint256) private _voiceIds;
 
     event RoyaltiesSet(uint256 indexed tokenId, address indexed recipient, uint256 value);
+    event SuccessRequestAddItem(address indexed royaltyReceiver, uint256 indexed voiceId);
+    event SuccessMinted(uint256 indexed tokenId, uint256 indexed voiceId, string tokenURI);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -30,27 +44,77 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         __Ownable_init();
     }
 
-    function safeMint(address to, string memory uri, address royaltyReceiver, uint256 royaltyRate) public onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-        _setRoyalties(tokenId, royaltyReceiver, royaltyRate);
+    // ユーザーがmintableなアイテムを追加する
+    function requestAddMintableItem(uint256 price, uint256 royaltyRate) public payable {
+        require(royaltyRate <= 10000, "Royalty rate is too high"); // 10000 means 100%, as rate is in basis points
+        require(msg.value == ADD_ITEM_PRICE, "invalid commison fee");
+        payable(owner()).transfer(msg.value);
+
+        uint256 voiceId = _voiceIdCounter.current();
+        _voiceIdCounter.increment();
+        _mintableItems[voiceId] = MintableItem(msg.sender, royaltyRate, price, '', false);
+
+        emit SuccessRequestAddItem(msg.sender, voiceId);
     }
 
-    function _setRoyalties(uint256 tokenId, address royaltyReceiver, uint256 royaltyRate) internal {
-        require(royaltyRate <= 10000, "Royalty rate is too high"); // 10000 means 100%, as rate is in basis points
-        _royaltyReceivers[tokenId] = royaltyReceiver;
-        _royaltyRates[tokenId] = royaltyRate;
+    // サービス側が準備後、承認する
+    function acceptAddMintableItem(uint256 voiceId, string memory itemTokenURI) public onlyOwner {
+        MintableItem memory item = _mintableItems[voiceId];
+        item.accepted = true;
+        item.tokenURI = itemTokenURI;
+        _mintableItems[voiceId] = item;
+    }
 
-        emit RoyaltiesSet(tokenId, royaltyReceiver, royaltyRate);
+    // 承認出来ない場合、手数料を返金する
+    function refundAddMintableItemFee(uint256 voiceId) public payable onlyOwner {
+        MintableItem memory item = _mintableItems[voiceId];
+        require(!item.accepted, "Item is already accepted");
+        payable(item.royaltyReceiver).transfer(ADD_ITEM_PRICE);
+
+        delete _mintableItems[voiceId];
+    }
+
+    // 情報を更新する
+    function updateMintableItem(uint256 voiceId, uint256 royaltyRate, uint256 price) public {
+        MintableItem memory item = _mintableItems[voiceId];
+        require(item.royaltyReceiver == msg.sender, "Only royalty receiver can update");
+
+        item.royaltyRate = royaltyRate;
+        item.price = price;
+        _mintableItems[voiceId] = item;
+    }
+
+    function calcMintPrice(uint256 price) internal pure returns (uint256) {
+        uint256 royalty = (price * MINT_COMMISSION_RATE) / 10000;
+        return price + royalty;
+    }
+
+    function getMintPrice(uint256 voiceId) public view returns (uint256) {
+        MintableItem memory item = _mintableItems[voiceId];
+        return calcMintPrice(item.price);
+    } 
+
+    function safeMint(address recipient, uint256 voiceId) public payable {
+        MintableItem memory item = _mintableItems[voiceId];
+        require(item.accepted, "Item is not accepted");
+        require(msg.value == calcMintPrice(item.price), "Invalid price");
+        
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(recipient, tokenId);
+        _setTokenURI(tokenId, item.tokenURI);
+        _voiceIds[tokenId] = voiceId;
+
+        emit RoyaltiesSet(tokenId, item.royaltyReceiver, item.royaltyRate);
+        emit SuccessMinted(tokenId, voiceId, item.tokenURI);
     }
 
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
-        uint256 royaltyRate = _royaltyRates[tokenId];
-        uint256 royalty = (salePrice * royaltyRate) / 10000; // as royaltyRate is in basis points
+        uint256 voiceId = _voiceIds[tokenId];
+        MintableItem memory item = _mintableItems[voiceId];
+        uint256 royalty = (salePrice * item.royaltyRate) / 10000; // as royaltyRate is in basis points
 
-        return (_royaltyReceivers[tokenId], royalty);
+        return (item.royaltyReceiver, royalty);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
