@@ -84,20 +84,31 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         _mintableItems[voiceId] = item;
     }
 
-    function calcMintPrice(uint256 price) internal pure returns (uint256) {
-        uint256 royalty = (price * MINT_COMMISSION_RATE) / 10000;
-        return price + royalty;
+    function calcMintPrice(uint256 price) internal pure returns (uint256, uint256) {
+        uint256 ownerCommision = (price * MINT_COMMISSION_RATE) / 10000;
+        return (price, ownerCommision);
     }
 
     function getMintPrice(uint256 voiceId) public view returns (uint256) {
         MintableItem memory item = _mintableItems[voiceId];
-        return calcMintPrice(item.price);
-    } 
+        (uint256 price, uint256 ownerCommision) = calcMintPrice(item.price);
+        return price + ownerCommision;
+    }
+
+    function transferMintFee(uint256 voiceId) internal {
+        MintableItem memory item = _mintableItems[voiceId];
+        (uint256 price, uint256 ownerCommision) = calcMintPrice(item.price);
+        require(msg.value == (price + ownerCommision), "Invalid price");
+
+        payable(item.royaltyReceiver).transfer(price);
+        payable(owner()).transfer(ownerCommision);
+    }
 
     function safeMint(address recipient, uint256 voiceId) public payable {
         MintableItem memory item = _mintableItems[voiceId];
         require(item.accepted, "Item is not accepted");
-        require(msg.value == calcMintPrice(item.price), "Invalid price");
+
+        transferMintFee(voiceId);
         
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -115,6 +126,10 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         uint256 royalty = (salePrice * item.royaltyRate) / 10000; // as royaltyRate is in basis points
 
         return (item.royaltyReceiver, royalty);
+    }
+
+    function withdraw() public onlyOwner {
+        payable(owner()).transfer(address(this).balance);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
