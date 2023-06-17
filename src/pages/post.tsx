@@ -2,28 +2,69 @@ import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
+import { toast } from "react-hot-toast";
 
 export default function PostPage() {
   const [formState, setFormState] = React.useState({
     title: "",
     description: "",
     thumbnailUrl: "",
+    rvcModelUrl: "",
   });
 
-  const handleChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
-  };
+  const handleChangeThumbnail =
+    (key: string, uploadedDir: string) =>
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files ?? [];
+      if (files.length === 0) {
+        return;
+      }
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+      const formData = new FormData();
+      formData.append("file", files[0]);
+
+      const res = await toast.promise(
+        fetch(`/api/files?dir=${encodeURIComponent(uploadedDir)}`, {
+          method: "POST",
+          body: formData,
+        }),
+        {
+          loading: "アップロード中です",
+          success: "アップロードが完了しました",
+          error: "アップロードに失敗しました",
+        }
+      );
+      const filepath: string | undefined = (await res.json())?.filepath;
+
+      if (filepath) {
+        setFormState((s) => ({
+          ...s,
+          [key]: filepath,
+        }));
+      }
+    };
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    console.log(formState);
+    await toast.promise(
+      fetch("/api/voiceModels", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      }),
+      {
+        loading: "アップロード中です",
+        success: "アップロードが完了しました",
+        error: "アップロードに失敗しました",
+      }
+    );
   };
 
   return (
     <k.div
-      className="snap-y snap-mandatory hidden-scrollbar"
-      height="100vh"
       overflow-y="scroll"
       display="flex"
       justify="center"
@@ -39,6 +80,7 @@ export default function PostPage() {
         bg="linear-gradient(175deg, rgb(8 37 52) 0%, rgb(3 14 36) 100%)"
         borderRadius="8px"
         p="40px 44px"
+        m="10vh 0 20vh"
       >
         <k.h2 fontSize="1.2rem" fontWeight="bold">
           声モデルを投稿
@@ -92,7 +134,7 @@ export default function PostPage() {
               type="file"
               accept="image/*"
               display="none"
-              onChange={handleChangeThumbnail}
+              onChange={handleChangeThumbnail("thumbnailUrl", "images/")}
             />
             {formState.thumbnailUrl.length > 0 ? (
               <img src={formState.thumbnailUrl} />
@@ -104,6 +146,36 @@ export default function PostPage() {
                 bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
               >
                 画像をアップロード
+              </k.div>
+            )}
+          </k.label>
+        </k.div>
+        <k.div display="flex" flexDir="column" gap="4px">
+          <k.span fontSize="0.85rem">RVCモデル</k.span>
+          <k.label
+            cursor="pointer"
+            width="fit-content"
+            _hover={{
+              opacity: 0.7,
+            }}
+            style={{ wordBreak: "break-all" }}
+          >
+            <k.input
+              type="file"
+              accept=".pth"
+              display="none"
+              onChange={handleChangeThumbnail("rvcModelUrl", "rvc_models/")}
+            />
+            {formState.rvcModelUrl.length > 0 ? (
+              <k.div>{formState.rvcModelUrl}</k.div>
+            ) : (
+              <k.div
+                p="5px 16px"
+                fontSize="0.85rem"
+                borderRadius="8px"
+                bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
+              >
+                RVCモデルをアップロード
               </k.div>
             )}
           </k.label>

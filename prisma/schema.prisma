@@ -70,6 +70,9 @@ model VoiceModel {
   id      String    @id @default(cuid())
   url     String
   userId  String
+  title String
+  thumbnailUrl String
+  description String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   musics Music[]
   createdAt DateTime @default(now())
