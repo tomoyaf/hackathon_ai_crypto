@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { AppContext, AppInitialProps, AppLayoutProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import "../app/globals.css";
+import { Toaster } from "react-hot-toast";
 
 function App({
   Component,
@@ -10,6 +11,7 @@ function App({
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
   return (
     <SessionProvider session={session}>
+      <Toaster />
       {getLayout(<Component {...pageProps} />)}
     </SessionProvider>
   );
