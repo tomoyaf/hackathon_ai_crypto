@@ -4,6 +4,7 @@ import type {
   NextLayoutComponentType,
 } from "next";
 import type { AppProps } from "next/app";
+import React, { ReactNode } from "react";
 
 declare module "next" {
   type NextLayoutComponentType<P = {}> = NextComponentType<
