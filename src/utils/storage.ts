@@ -3,7 +3,7 @@ import nodePath from "node:path";
 
 export const storage = new Storage({
   projectId: "aicrypto-389808",
-  keyFilename: nodePath.resolve(__dirname, "../../key/gcloud.json"),
+  keyFilename: nodePath.resolve("./key/gcloud.json"),
 });
 
 export async function createBucket(
@@ -28,4 +28,17 @@ export async function uploadFile(
   const fileObj = bucket.file(filePath);
   await fileObj.save(file, uploadOption);
   return fileObj;
+}
+
+export async function createWriteStream(
+  filename: string,
+  contentType?: string
+) {
+  const bucket = await createBucket();
+  const stream = bucket.file(filename).createWriteStream({
+    gzip: true,
+    contentType: contentType,
+  });
+
+  return stream;
 }
