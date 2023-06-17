@@ -1,6 +1,5 @@
 import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
-import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import useSWR from "swr";
