@@ -27,6 +27,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
 
     mapping(uint256 => MintableItem) private _mintableItems;
     mapping(uint256 => uint256) private _voiceIds;
+    mapping(address => mapping(uint256 => uint256)) private _ownedVoiceIds;
 
     event RoyaltiesSet(uint256 indexed tokenId, address indexed recipient, uint256 value);
     event SuccessRequestAddItem(address indexed royaltyReceiver, uint256 indexed voiceId);
@@ -115,9 +116,15 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         _safeMint(recipient, tokenId);
         _setTokenURI(tokenId, item.tokenURI);
         _voiceIds[tokenId] = voiceId;
+        _ownedVoiceIds[recipient][voiceId] = tokenId;
 
         emit RoyaltiesSet(tokenId, item.royaltyReceiver, item.royaltyRate);
         emit SuccessMinted(tokenId, voiceId, item.tokenURI);
+    }
+
+    function ownerOfVoiceId(uint256 voiceId) public view returns (address) {
+        uint256 tokenId = _ownedVoiceIds[msg.sender][voiceId];
+        return ownerOf(tokenId);
     }
 
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
@@ -143,6 +150,10 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         internal
         override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
     {
+        uint256 voiceId = _voiceIds[tokenId];
+        delete _ownedVoiceIds[ownerOf(tokenId)][voiceId];
+        delete _voiceIds[tokenId];
+
         super._burn(tokenId);
     }
 

@@ -1,7 +1,7 @@
 import {ethers} from 'hardhat'
 
 // localnet
-const ATTACH_TOKEN_ADDRESS = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
+const ATTACH_TOKEN_ADDRESS = '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0'
 
 async function main() {
   const [owner, account1, account2, ...otherAccounts] = await ethers.getSigners()
@@ -38,6 +38,7 @@ async function main() {
 
   console.log(await owner.getBalance())
   console.log(await account1.getBalance())
+  console.log(await account2.getBalance())
 }
 
 main()
