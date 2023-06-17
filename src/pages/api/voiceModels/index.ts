@@ -7,57 +7,19 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") return;
+  if (req.method !== "GET") return;
 
   try {
-    const session = await getServerSession(req, res, authOptions);
-    if (session == null || session.user?.email == null) {
-      res.status(401).json({
-        message: "ログインしてください",
-      });
-      return;
-    }
-
-    const { title, description, thumbnailUrl, rvcModelUrl } = req.body;
-
-    if (
-      title == null ||
-      description == null ||
-      thumbnailUrl == null ||
-      rvcModelUrl == null
-    ) {
-      res.status(400).json({
-        message: "不正なreq.body",
-        body: { title, description, thumbnailUrl, rvcModelUrl },
-      });
-      return;
-    }
-
-    const user = await prisma.user.findFirst({
+    const q = (req.query.q ?? "") as string;
+    const voiceModels = await prisma.voiceModel.findMany({
       where: {
-        email: session.user.email,
+        title: {
+          contains: q,
+        },
       },
     });
 
-    if (user == null) {
-      // ほとんどあり得ないが、退会済みのアカウントで起こりうるかもしれないので、以下の対応をしている
-      res.status(403).json({
-        message: "許可されていないユーザーです",
-      });
-      return;
-    }
-
-    const savedVoiceModel = await prisma.voiceModel.create({
-      data: {
-        title,
-        description,
-        thumbnailUrl,
-        url: rvcModelUrl,
-        userId: user.id,
-      },
-    });
-
-    res.status(200).json({ savedVoiceModel });
+    res.status(200).json(voiceModels);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "サーバーエラーが発生しました。" });

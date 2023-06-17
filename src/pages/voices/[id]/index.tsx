@@ -19,4 +19,4 @@ export default function IndexPage() {
   );
 }
 
-IndexPage.getLayout = (page: any) => <Layout withHeader>{page}</Layout>;
+IndexPage.getLayout = (page: any) => <Layout>{page}</Layout>;
