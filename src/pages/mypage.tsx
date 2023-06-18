@@ -11,6 +11,7 @@ import {
   VoiceModel,
 } from "@prisma/client";
 import Link from "next/link";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
 export default function IndexPage() {
   const { status, data: session } = useSession();
@@ -87,32 +88,55 @@ export default function IndexPage() {
           声モデル
         </k.h1>
         <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
-          {myInfo?.voiceModels.map((voiceModel) => (
-            <Link href={`/voices/${voiceModel.id}`}>
+          {(myInfo?.voiceModels.length ?? 0) === 0 ? (
+            <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
+              <k.p>まだ声モデルを投稿していないようです。</k.p>
+              <k.p>
+                声をNFTとして投稿することで、世界中のクリエイターにあなたの声を解放してみましょう！
+              </k.p>
               <k.div
-                width="250px"
-                height="300px"
-                overflow="hidden"
+                borderStyle="solid"
+                borderWidth="1px"
+                borderColor="#bbb"
+                width="fit-content"
                 borderRadius="4px"
-                display="flex"
-                flexDir="column"
-                bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
+                p="4px 24px"
+                m="20px 0 0"
               >
-                <k.img
-                  src={voiceModel.thumbnailUrl}
-                  width="250px"
-                  height="200px"
-                  style={{ objectFit: "cover" }}
-                />
-                <k.div m="12px 0 0" p="0 12px">
-                  {voiceModel.title}
-                </k.div>
-                <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
-                  {voiceModel.description}
-                </k.div>
+                <Link href="/post" style={{ display: "flex", gap: "12px" }}>
+                  声モデルを投稿する
+                  <ArrowRightIcon width="24px" />
+                </Link>
               </k.div>
-            </Link>
-          ))}
+            </k.div>
+          ) : (
+            myInfo?.voiceModels.map((voiceModel) => (
+              <Link href={`/voices/${voiceModel.id}`}>
+                <k.div
+                  width="250px"
+                  height="300px"
+                  overflow="hidden"
+                  borderRadius="4px"
+                  display="flex"
+                  flexDir="column"
+                  bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
+                >
+                  <k.img
+                    src={voiceModel.thumbnailUrl}
+                    width="250px"
+                    height="200px"
+                    style={{ objectFit: "cover" }}
+                  />
+                  <k.div m="12px 0 0" p="0 12px">
+                    {voiceModel.title}
+                  </k.div>
+                  <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
+                    {voiceModel.description}
+                  </k.div>
+                </k.div>
+              </Link>
+            ))
+          )}
         </k.div>
       </k.div>
 
