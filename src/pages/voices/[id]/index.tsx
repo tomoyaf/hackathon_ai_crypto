@@ -1,6 +1,5 @@
-import { Layout, SongItem, SongListItem } from "@/components";
+import { Layout, SongListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
-import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
 import { InferGetServerSidePropsType } from "next";
 import useSWR from "swr";
@@ -13,10 +12,9 @@ type VoiceModelWithMusics = VoiceModel & {
 type ServerProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 export default function IndexPage({ initialData }: ServerProps) {
-  const items = useFeedItems();
   const router = useRouter();
   const { id } = router.query;
-  const { data = initialData, isLoading } = useSWR<VoiceModelWithMusics>(
+  const { data = initialData } = useSWR<VoiceModelWithMusics>(
     `/api/voiceModels/${id}`,
     (url: string) => fetch(url).then((res) => res.json())
   );
