@@ -3,6 +3,7 @@ import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function PostPage() {
   const [formState, setFormState] = React.useState({
@@ -11,6 +12,8 @@ export default function PostPage() {
     thumbnailUrl: "",
     rvcModelUrl: "",
   });
+
+  const router = useRouter();
 
   const handleChangeThumbnail =
     (key: string, uploadedDir: string) =>
@@ -47,7 +50,7 @@ export default function PostPage() {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    await toast.promise(
+    const res = await toast.promise(
       fetch("/api/voiceModels", {
         method: "POST",
         headers: {
@@ -61,6 +64,9 @@ export default function PostPage() {
         error: "アップロードに失敗しました",
       }
     );
+    const savedVoiceModel = (await res.json())?.savedVoiceModel;
+
+    router.push(`/voices/${savedVoiceModel.id}`);
   };
 
   return (
