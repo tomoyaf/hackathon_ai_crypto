@@ -14,6 +14,9 @@ export default async function handler(
       where: {
         id: String(id),
       },
+      include: {
+        musics: true,
+      },
     });
 
     if (!voiceModel) {
