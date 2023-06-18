@@ -102,6 +102,7 @@ export default function IndexPage() {
         >
           {tabs.map((tab, index) => (
             <k.button
+              key={tab.label}
               onClick={() => setSelectedTab(index)}
               fontSize="1.5rem"
               fontWeight="900"
@@ -195,7 +196,7 @@ export default function IndexPage() {
         {tabs.findIndex((tab) => tab.label === "高評価した曲") ===
           selectedTab && (
           <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
-            {(myInfo?.originalMusics.length ?? 0) === 0 ? (
+            {(myInfo?.musicEvaluations.length ?? 0) === 0 ? (
               <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
                 <k.p>まだ曲を高評価していないようです。</k.p>
                 <k.p>曲を聴いて、あなたにぴったりの曲を探しましょう！</k.p>
