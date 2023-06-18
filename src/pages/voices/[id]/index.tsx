@@ -55,10 +55,7 @@ export default function IndexPage() {
   };
 
   return (
-    <k.div
-      className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll"
-      height="100vh"
-    >
+    <k.div display="flex" flexDir="column">
       <Upper>
         <UpperContent className={css({ bgColor: "#32304d" })} />
         <UpperContent
