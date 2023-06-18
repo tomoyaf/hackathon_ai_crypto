@@ -11,7 +11,7 @@ const config: HardhatUserConfig = {
   networks: {
     mumbai: {
       url: 'https://matic-mumbai.chainstacklabs.com',
-      accounts: [process.env.NETWORK_ACCOUNT || ''],
+      accounts: [process.env.OWNER_PRIVATE_KEY || '', process.env.RECEIVER_PRIVATE_KEY || ''],
       chainId: 80001
     }
   }

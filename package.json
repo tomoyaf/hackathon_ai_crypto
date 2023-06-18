@@ -38,6 +38,7 @@
     "typescript": "5.1.3"
   },
   "devDependencies": {
+    "@metamask/providers": "^11.0.0",
     "@types/formidable": "^2.0.6",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^2.8.8",

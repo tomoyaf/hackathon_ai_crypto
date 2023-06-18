@@ -1,18 +1,29 @@
 import {ethers} from 'hardhat'
 
 // localnet
-const ATTACH_TOKEN_ADDRESS = '0xe03CbF0FF677C7B4b0C555D564bf99eFef3B0F9e'
+const ATTACH_TOKEN_ADDRESS = '0x65048b48FC112FeBF3D5aEC9663E093597415c4c'
 
 async function main() {
-  const [owner] = await ethers.getSigners()
+  const [owner, account1] = await ethers.getSigners()
   const Token = await ethers.getContractFactory('VoiceToken')
-  const token = Token.attach(ATTACH_TOKEN_ADDRESS)
+  let token = Token.attach(ATTACH_TOKEN_ADDRESS)
 
-  // const result = await token.tokenOfOwnerByIndex(account1.address, 1)
-  const tx = await token.safeMint(owner.address, 'https://example.com', owner.address, 1000)
-  const result = await tx.wait()
+  token = token.connect(account1)
+  const addTx = await token.requestAddMintableItem(ethers.utils.parseEther('10'), 2, 500, {
+    value: ethers.utils.parseEther('5')
+  })
 
-  console.log(result)
+  const addResult = await addTx.wait()
+  const voiceId = addResult.events?.find(e => e.event === 'SuccessRequestAddItem')?.args?.[1]
+
+  token = token.connect(owner)
+  const tx2 = await token.acceptAddMintableItem(
+    voiceId,
+    'https://storage.googleapis.com/ai_crypto/metadata/b44ae953-378b-401e-adbf-144feb20bb9c.json'
+  )
+
+  const result = await tx2.wait()
+  console.log(result, voiceId)
 }
 
 main()

@@ -22,12 +22,14 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         uint256 royaltyRate;
         uint256 price;
         string tokenURI;
+        uint256 maxSupply; // 0 means unlimited
         bool accepted;
     }
 
     mapping(uint256 => MintableItem) private _mintableItems;
     mapping(uint256 => uint256) private _voiceIds;
     mapping(address => mapping(uint256 => uint256)) private _ownedVoiceIds;
+    mapping(uint256 => uint256) private _soldItemCounts;
 
     event RoyaltiesSet(uint256 indexed tokenId, address indexed recipient, uint256 value);
     event SuccessRequestAddItem(address indexed royaltyReceiver, uint256 indexed voiceId);
@@ -46,14 +48,14 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     }
 
     // ユーザーがmintableなアイテムを追加する
-    function requestAddMintableItem(uint256 price, uint256 royaltyRate) public payable {
+    function requestAddMintableItem(uint256 price, uint256 maxSupply, uint256 royaltyRate) public payable {
         require(royaltyRate <= 10000, "Royalty rate is too high"); // 10000 means 100%, as rate is in basis points
         require(msg.value == ADD_ITEM_PRICE, "invalid commison fee");
         payable(owner()).transfer(msg.value);
 
         uint256 voiceId = _voiceIdCounter.current();
         _voiceIdCounter.increment();
-        _mintableItems[voiceId] = MintableItem(msg.sender, royaltyRate, price, '', false);
+        _mintableItems[voiceId] = MintableItem(msg.sender, royaltyRate, price, '', maxSupply, false);
 
         emit SuccessRequestAddItem(msg.sender, voiceId);
     }
@@ -76,12 +78,13 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     }
 
     // 情報を更新する
-    function updateMintableItem(uint256 voiceId, uint256 royaltyRate, uint256 price) public {
+    function updateMintableItem(uint256 voiceId, uint256 price, uint256 maxSupply, uint256 royaltyRate) public {
         MintableItem memory item = _mintableItems[voiceId];
         require(item.royaltyReceiver == msg.sender, "Only royalty receiver can update");
 
         item.royaltyRate = royaltyRate;
         item.price = price;
+        item.maxSupply = maxSupply;
         _mintableItems[voiceId] = item;
     }
 
@@ -108,6 +111,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     function safeMint(address recipient, uint256 voiceId) public payable {
         MintableItem memory item = _mintableItems[voiceId];
         require(item.accepted, "Item is not accepted");
+        require(item.maxSupply == 0 || _soldItemCounts[voiceId] < item.maxSupply, "Sold out");
 
         transferMintFee(voiceId);
         
@@ -117,14 +121,21 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         _setTokenURI(tokenId, item.tokenURI);
         _voiceIds[tokenId] = voiceId;
         _ownedVoiceIds[recipient][voiceId] = tokenId;
+        _soldItemCounts[voiceId] += 1;
 
         emit RoyaltiesSet(tokenId, item.royaltyReceiver, item.royaltyRate);
         emit SuccessMinted(tokenId, voiceId, item.tokenURI);
     }
 
-    function ownerOfVoiceId(uint256 voiceId) public view returns (address) {
-        uint256 tokenId = _ownedVoiceIds[msg.sender][voiceId];
-        return ownerOf(tokenId);
+    function getMintableCount(uint256 voiceId) public view returns (uint256, uint256, bool) {
+        MintableItem memory item = _mintableItems[voiceId];
+        // item.maxSupply == 0は無制限
+        return (_soldItemCounts[voiceId], item.maxSupply, item.maxSupply == 0);
+    }
+
+    function hasOwnedVoiceId(address ownerAddress, uint256 voiceId) public view returns (uint256) {
+        uint256 tokenId = _ownedVoiceIds[ownerAddress][voiceId];
+        return tokenId;
     }
 
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
