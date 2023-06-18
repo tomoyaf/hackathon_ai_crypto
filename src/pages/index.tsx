@@ -9,9 +9,8 @@ export default function IndexPage() {
 
   return (
     <k.div
-      className="snap-y snap-mandatory hidden-scrollbar"
+      className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll"
       height="100vh"
-      style={{ overflowY: "scroll" }}
     >
       <k.div mt="100px"></k.div>
 
