@@ -1,7 +1,5 @@
 import { Layout, SongListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
-import { useReadOnlyProvider, useContract } from "@/hooks/useContract";
-import { utils } from "ethers";
 import React from "react";
 import { InferGetServerSidePropsType } from "next";
 import useSWR from "swr";
@@ -15,34 +13,11 @@ type ServerProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 export default function IndexPage({ initialData }: ServerProps) {
   const router = useRouter();
-  const { provider: readOnlyProvider } = useReadOnlyProvider();
-  // metamask連携が出来ない場合は、read only providerを使う
-  const { contract } = useContract(readOnlyProvider);
   const { id } = router.query;
   const { data = initialData } = useSWR<VoiceModelWithMusics>(
-    `/api/voiceModels/${id}`,
+    `/api/originalMusics/${id}`,
     (url: string) => fetch(url).then((res) => res.json())
   );
-
-  const [isSoldOut, setIsSoldOut] = React.useState(false);
-  const [price, setPrice] = React.useState("");
-  React.useEffect(() => {
-    (async () => {
-      if (!contract || !data.voiceId) return;
-      const [currentSoldCount, maxSupply, isUnlimitedSupply] =
-        await contract.getMintableCount(data.voiceId);
-
-      console.log(currentSoldCount, maxSupply, isUnlimitedSupply);
-
-      const isMintable = isUnlimitedSupply || currentSoldCount < maxSupply;
-      setIsSoldOut(isMintable);
-
-      if (!isMintable) return;
-      const price = await contract.getMintPrice(data.voiceId);
-      console.log(utils.formatEther(price));
-      setPrice(utils.formatEther(price));
-    })();
-  }, [contract, data.voiceId]);
 
   return (
     <k.div
@@ -90,7 +65,7 @@ export default function IndexPage({ initialData }: ServerProps) {
       </Upper>
       <k.div mt="50px"></k.div>
 
-      {data.musics.map((m, i) => {
+      {data?.musics?.map((m, i) => {
         return <SongListItem music={m} key={m.id} />;
       })}
     </k.div>

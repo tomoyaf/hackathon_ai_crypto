@@ -2,10 +2,15 @@ import React, { FC } from "react";
 import { k, styled, css } from "@kuma-ui/core";
 import { VoiceModel } from "@prisma/client";
 import Link from "next/link";
+import { usePlayer } from "@/hooks/usePlayer";
 
 export const SongItem: FC<{
   voiceModel: VoiceModel;
 }> = ({ voiceModel }) => {
+  // const {isMusicPlaying, currentMusic} = usePlayer()
+
+  // const isPlaying = currentMusic?.id ===
+
   return (
     <Link href={`/voices/${voiceModel.id}`}>
       <k.div
