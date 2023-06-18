@@ -27,7 +27,7 @@ export async function connectContract() {
   const provider = new ethers.providers.JsonRpcProvider(
     process.env.CHAIN_RPC_URL || ""
   );
-  console.log(process.env.OWNER_PRIVATE_KEY);
+
   const ownerWallet = new ethers.Wallet(
     process.env.OWNER_PRIVATE_KEY || "",
     provider
@@ -55,8 +55,9 @@ export async function acceptAddMintableItem(
 // 販売可能に出来なかった場合、承認待ち情報を削除して登録料を返金する
 export async function refund(voiceId: number) {
   const { contract } = await connectContract();
+  const [addItemPrice] = await contract.getCurrentSetting();
   const tx = await contract.refundAddMintableItemFee(voiceId, {
-    value: ethers.utils.parseEther("5"), // コントラクトにハードコーディングされてる 5 Matic
+    value: addItemPrice,
   });
   await tx.wait();
 }
