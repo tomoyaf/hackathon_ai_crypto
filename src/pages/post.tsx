@@ -6,6 +6,7 @@ import * as contractUtils from "@/utils/contractFrontend";
 import React from "react";
 import { toast } from "react-hot-toast";
 import { utils } from "ethers";
+import { useRouter } from "next/navigation";
 
 export default function PostPage() {
   const { provider } = useMetaMask();
@@ -29,6 +30,8 @@ export default function PostPage() {
     royaltyRate: 5,
     maxSupply: 100,
   });
+
+  const router = useRouter();
 
   const handleChangeThumbnail =
     (key: string, uploadedDir: string) =>
@@ -100,11 +103,11 @@ export default function PostPage() {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    await toast.promise(
+    const res = await toast.promise(
       (async () => {
         await registerToContract();
 
-        await fetch("/api/voiceModels", {
+        return await fetch("/api/voiceModels", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -118,6 +121,9 @@ export default function PostPage() {
         error: "アップロードに失敗しました",
       }
     );
+    const savedVoiceModel = (await res.json())?.savedVoiceModel;
+
+    router.push(`/voices/${savedVoiceModel.id}`);
   };
 
   return (

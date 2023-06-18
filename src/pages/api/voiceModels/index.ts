@@ -24,6 +24,7 @@ export default async function handler(
         console.error(e);
         res.status(500).json({ message: "サーバーエラーが発生しました。" });
       }
+      return;
     }
     case "POST": {
       try {
@@ -79,6 +80,7 @@ export default async function handler(
         console.error(e);
         res.status(500).json({ message: "サーバーエラーが発生しました。" });
       }
+      return;
     }
   }
 
