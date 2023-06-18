@@ -1,10 +1,10 @@
 import { k } from "@kuma-ui/core";
-import { Layout, SongItem } from "@/components";
+import { Layout } from "@/components";
 import React from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import useSWR from "swr";
 import { VoiceModel } from "@prisma/client";
-import Link from "next/link";
+import { Card } from "@/components/card";
 
 export default function SearchPage() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -23,7 +23,7 @@ export default function SearchPage() {
       alignItems="center"
       flexDir="column"
       gap="36px"
-      p="24px 0"
+      p="24px 0 120px"
     >
       <k.div width="600px" maxWidth="90%">
         <k.div width="100%" display="flex" gap="18px">
@@ -46,7 +46,13 @@ export default function SearchPage() {
         ) : (
           <k.div display="flex" flexWrap="wrap" width="100%" gap="24px">
             {data?.map((voiceModel) => (
-              <SongItem voiceModel={voiceModel} key={voiceModel.id} />
+              <Card
+                key={voiceModel.id}
+                href={`/voices/${voiceModel.id}`}
+                imageUrl={voiceModel.thumbnailUrl}
+                title={voiceModel.title}
+                description={voiceModel.description}
+              />
             ))}
           </k.div>
         )}
