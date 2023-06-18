@@ -2,19 +2,35 @@ import React from "react";
 import { k, styled, css } from "@kuma-ui/core";
 import { Music } from "@prisma/client";
 import { usePlayer } from "@/hooks/usePlayer";
+import { HeartIcon as HeartOutlineIcon } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 
 export type ListItemProps = {
-  music: Music;
+  music: Music & { isLiked: boolean };
+  updateEvaluation: (evaluation: number) => void;
 };
 
-export const ListItem: React.FC<ListItemProps> = ({ music }) => {
+export const ListItem: React.FC<ListItemProps> = ({
+  music,
+  updateEvaluation,
+}) => {
   const { handlePlayButtonClick, currentMusic, isMusicPlaying } = usePlayer();
 
   const nowPlaying = currentMusic?.id === music.id && !!isMusicPlaying(music);
+  const [isLiked, setIsLiked] = React.useState(music.isLiked);
+
+  const handleLike = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+
+    updateEvaluation(isLiked ? 0 : 1);
+
+    setIsLiked(!isLiked);
+  };
 
   return (
-    <k.div
+    <k.button
       role="row"
+      onClick={() => handlePlayButtonClick(music)}
       maxWidth="1200px"
       mx="auto"
       _hover={{
@@ -24,7 +40,7 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
     >
       <Content>
         <div className={css({ display: "flex" })}>
-          <button onClick={() => handlePlayButtonClick(music)}>
+          <k.div display="flex" justify="center" alignItems="center">
             {!nowPlaying ? (
               <svg
                 role="img"
@@ -50,8 +66,9 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
                 <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
               </svg>
             )}
-          </button>
+          </k.div>
         </div>
+
         <k.div
           display="flex"
           flexDir="row"
@@ -80,6 +97,7 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
             {music.title}
           </k.div>
         </k.div>
+
         <k.div
           fontSize="0.8rem"
           display="flex"
@@ -91,28 +109,38 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
         >
           <span>29,932,367</span>
         </k.div>
-        <k.div
+
+        <k.button
           display="flex"
           gridColumn="last"
           alignItems="center"
+          justify="center"
           style={{
             justifySelf: "end",
           }}
+          borderRadius="9999px"
+          width="38px"
+          height="38px"
+          transition="background ease 220ms"
+          _hover={{
+            bg: "#34364a",
+          }}
+          onClick={handleLike}
         >
-          <svg
-            role="img"
-            height="16px"
-            width="16px"
-            aria-hidden="true"
-            viewBox="0 0 16 16"
-            data-encore-id="icon"
-            fill="white"
-          >
-            <path d="M1.69 2A4.582 4.582 0 0 1 8 2.023 4.583 4.583 0 0 1 11.88.817h.002a4.618 4.618 0 0 1 3.782 3.65v.003a4.543 4.543 0 0 1-1.011 3.84L9.35 14.629a1.765 1.765 0 0 1-2.093.464 1.762 1.762 0 0 1-.605-.463L1.348 8.309A4.582 4.582 0 0 1 1.689 2zm3.158.252A3.082 3.082 0 0 0 2.49 7.337l.005.005L7.8 13.664a.264.264 0 0 0 .311.069.262.262 0 0 0 .09-.069l5.312-6.33a3.043 3.043 0 0 0 .68-2.573 3.118 3.118 0 0 0-2.551-2.463 3.079 3.079 0 0 0-2.612.816l-.007.007a1.501 1.501 0 0 1-2.045 0l-.009-.008a3.082 3.082 0 0 0-2.121-.861z"></path>
-          </svg>
-        </k.div>
+          {isLiked ? (
+            <HeartSolidIcon
+              width="22px"
+              style={{ color: nowPlaying ? "#f81c55" : "#b3b3b3" }}
+            />
+          ) : (
+            <HeartOutlineIcon
+              width="22px"
+              style={{ color: nowPlaying ? "#f81c55" : "#b3b3b3" }}
+            />
+          )}
+        </k.button>
       </Content>
-    </k.div>
+    </k.button>
   );
 };
 
@@ -124,6 +152,7 @@ const Content = styled("div")`
   padding: 0px 16px;
   grid-gap: 16px;
   display: grid;
+  align-items: center;
   padding: 0 16px;
   grid-template-columns: [index] 16px [first] 4fr [var1] 2fr [last] minmax(
       120px,

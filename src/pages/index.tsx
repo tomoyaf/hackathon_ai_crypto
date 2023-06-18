@@ -14,18 +14,41 @@ export default function IndexPage() {
         "Content-Type": "application/json",
       },
     }).then((res) => res.json());
-  const { data } = useSWR<{ musics: Music[] }>(`/api/musics`, fetcher);
+  const { data } = useSWR<{ musics: (Music & { isLiked: boolean })[] }>(
+    `/api/musics`,
+    fetcher
+  );
+
+  const updateEvaluation = (musicId: string) => (evaluation: number) => {
+    fetch(`/api/musics/${musicId}/evaluation`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ evaluation }),
+    });
+  };
 
   return (
     <k.div
       className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll"
       height="100vh"
+      width="600px"
+      maxWidth="calc(100vw - 12px)"
     >
       <k.div mt="100px"></k.div>
 
-      {data?.musics?.map((item, i) => {
-        return <ListItem music={item} key={i} />;
-      })}
+      <k.div display="flex" flexDir="column" alignItems="center">
+        {data?.musics?.map((item, i) => {
+          return (
+            <ListItem
+              music={item}
+              updateEvaluation={updateEvaluation(item.id)}
+              key={i}
+            />
+          );
+        })}
+      </k.div>
     </k.div>
   );
 }

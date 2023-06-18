@@ -5,6 +5,7 @@ import React from "react";
 import { signIn, useSession } from "next-auth/react";
 import useSWR from "swr";
 import {
+  Music,
   MusicEvaluation,
   OriginalMusic,
   User,
@@ -25,7 +26,7 @@ export default function IndexPage() {
     | (User & {
         voiceModels: VoiceModel[];
         originalMusics: OriginalMusic[];
-        musicEvaluations: MusicEvaluation[];
+        musicEvaluations: (MusicEvaluation & { music: Music })[];
       })
     | null
   >("/api/users/me", (url: string) => fetch(url).then((res) => res.json()));
@@ -35,7 +36,7 @@ export default function IndexPage() {
     { label: "声モデル" },
     { label: "投稿曲" },
     { label: "高評価した曲" },
-  ];
+  ] as const;
 
   return (
     <k.div
@@ -222,6 +223,61 @@ export default function IndexPage() {
                     </k.div>
                     <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
                       {originalMusic.description}
+                    </k.div>
+                  </k.div>
+                </Link>
+              ))
+            )}
+          </k.div>
+        )}
+
+        {tabs.findIndex((tab) => tab.label === "高評価した曲") ===
+          selectedTab && (
+          <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
+            {(myInfo?.originalMusics.length ?? 0) === 0 ? (
+              <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
+                <k.p>まだ曲を高評価していないようです。</k.p>
+                <k.p>曲を聴いて、あなたにぴったりの曲を探しましょう！</k.p>
+                <k.div
+                  borderStyle="solid"
+                  borderWidth="1px"
+                  borderColor="#bbb"
+                  width="fit-content"
+                  borderRadius="4px"
+                  p="4px 24px"
+                  m="20px 0 0"
+                >
+                  <Link href="/" style={{ display: "flex", gap: "12px" }}>
+                    曲を聴く
+                    <ArrowRightIcon width="24px" />
+                  </Link>
+                </k.div>
+              </k.div>
+            ) : (
+              myInfo?.musicEvaluations.map((musicEvaluation) => (
+                <Link href={`/musics/${musicEvaluation.musicId}`}>
+                  <k.div
+                    width="250px"
+                    height="300px"
+                    overflow="hidden"
+                    borderRadius="4px"
+                    display="flex"
+                    flexDir="column"
+                    transition="opacity ease 220ms"
+                    _hover={{ opacity: 0.7 }}
+                    bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
+                  >
+                    <k.img
+                      src={musicEvaluation.music.thumbnailUrl}
+                      width="250px"
+                      height="180px"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <k.div m="12px 0 4px" p="0 12px">
+                      {musicEvaluation.music.title}
+                    </k.div>
+                    <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
+                      {musicEvaluation.music.description}
                     </k.div>
                   </k.div>
                 </Link>

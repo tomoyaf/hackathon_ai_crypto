@@ -123,6 +123,7 @@ model MusicEvaluation {
 
   @@index([musicId])
   @@index([userId])
+  @@unique([musicId, userId])
 }
 
 model Report {

@@ -2,7 +2,7 @@ import classNames from "classnames";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { css } from "@kuma-ui/core";
+import { css, k } from "@kuma-ui/core";
 
 export type HeaderProps = {};
 
@@ -11,16 +11,24 @@ export const Header: React.FC<HeaderProps> = () => {
   const isVoiceModelTab = router.pathname === "/voices";
 
   return (
-    <nav
-      className={classNames(
-        css({
-          bg: "linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%)",
-        }),
-        "fixed top-0 w-screen z-30"
-      )}
+    <k.nav
+      width="100vw"
+      display="flex"
+      justify="center"
+      position="fixed"
+      top="4px"
+      zIndex="30"
+      bg="linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%)"
     >
-      <ol className="flex justify-around items-center w-[85%] m-auto">
-        <li className="flex-1 flex h-[60px] justify-center items-center relative">
+      <k.ol
+        display="flex"
+        justify="space-around"
+        alignItems="center"
+        m="auto"
+        width="600px"
+        maxWidth="100vw"
+      >
+        <li className="flex-1 flex h-[68px] justify-center items-center relative">
           <Link
             href="/"
             className={classNames(
@@ -31,11 +39,9 @@ export const Header: React.FC<HeaderProps> = () => {
             サンプル曲
           </Link>
           <div
-            className="w-[calc(100%-36px)] h-[2px] bg-slate-50 absolute bottom-3 rounded-full transition-transform"
+            className="w-full h-[2px] bg-slate-50 absolute bottom-3 rounded-full transition-transform"
             style={{
-              transform: isVoiceModelTab
-                ? "translateX(42.5vw)"
-                : "translateX(0)",
+              transform: isVoiceModelTab ? "translateX(100%)" : "translateX(0)",
             }}
           />
         </li>
@@ -50,7 +56,7 @@ export const Header: React.FC<HeaderProps> = () => {
             声モデル
           </Link>
         </li>
-      </ol>
-    </nav>
+      </k.ol>
+    </k.nav>
   );
 };
