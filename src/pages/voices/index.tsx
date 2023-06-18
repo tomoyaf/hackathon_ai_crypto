@@ -12,26 +12,26 @@ export default function VoiceIndexPage() {
   const { data, isLoading } = useSWR<VoiceModel[]>(`/api/voiceModels`, fetcher);
 
   return (
-    <k.div
-      width="100vw"
-      display="flex"
-      justify="center"
-      alignItems="center"
-      flexDir="column"
-      gap="36px"
-      p="24px 0"
-    >
+    <k.div>
+      <k.div mt="100px"></k.div>
+
       <k.div
-        width="90%"
         display="flex"
-        justify="center"
+        flexDir="column"
         alignItems="center"
-        p="80px 0"
+        bg="linear-gradient(136deg, #0f1724, #05111c)"
+        p="36px 0"
       >
         {isLoading ? (
           <k.div>loading...</k.div>
         ) : (
-          <k.div display="flex" flexWrap="wrap" width="100%" gap="24px">
+          <k.div
+            display="flex"
+            flexWrap="wrap"
+            width="800px"
+            maxWidth="100%"
+            gap="24px"
+          >
             {data?.map((voiceModel) => (
               <Card
                 key={voiceModel.id}

@@ -18,6 +18,7 @@ export default async function handler(
               contains: q,
             },
           },
+          take: 100,
         });
 
         res.status(200).json(voiceModels);

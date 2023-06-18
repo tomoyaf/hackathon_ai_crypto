@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = () => {
       display="flex"
       justify="center"
       position="fixed"
-      top="4px"
+      top="8px"
       zIndex="30"
       bg="linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%)"
     >

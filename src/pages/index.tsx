@@ -30,15 +30,16 @@ export default function IndexPage() {
   };
 
   return (
-    <k.div
-      className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll"
-      height="100vh"
-      width="600px"
-      maxWidth="calc(100vw - 12px)"
-    >
+    <k.div>
       <k.div mt="100px"></k.div>
 
-      <k.div display="flex" flexDir="column" alignItems="center">
+      <k.div
+        display="flex"
+        flexDir="column"
+        alignItems="center"
+        bg="linear-gradient(136deg, #0f1724, #05111c)"
+        p="36px 0"
+      >
         {data?.musics?.map((item, i) => {
           return (
             <ListItem

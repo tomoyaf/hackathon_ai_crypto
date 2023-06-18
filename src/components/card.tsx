@@ -1,4 +1,4 @@
-import { k } from "@kuma-ui/core";
+import { k, styled } from "@kuma-ui/core";
 import Link from "next/link";
 import React from "react";
 
@@ -16,12 +16,12 @@ export const Card: React.FC<CardProps> = ({
   description,
 }) => {
   return (
-    <Link href={href}>
+    <StyledLink href={href}>
       <k.div
-        width="250px"
+        width={["100%", "250px"]}
         height="300px"
         overflow="hidden"
-        borderRadius="4px"
+        borderRadius={["0", "4px"]}
         display="flex"
         flexDir="column"
         transition="opacity ease 220ms"
@@ -30,7 +30,7 @@ export const Card: React.FC<CardProps> = ({
       >
         <k.img
           src={imageUrl}
-          width="250px"
+          width={["100%", "250px"]}
           height="180px"
           style={{ objectFit: "cover" }}
         />
@@ -41,6 +41,14 @@ export const Card: React.FC<CardProps> = ({
           {description}
         </k.div>
       </k.div>
-    </Link>
+    </StyledLink>
   );
 };
+
+const StyledLink = styled(Link)`
+  width: 250px;
+
+  @media screen and (max-width: 576px) {
+    width: 100%;
+  }
+`;

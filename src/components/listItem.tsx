@@ -33,6 +33,7 @@ export const ListItem: React.FC<ListItemProps> = ({
       onClick={() => handlePlayButtonClick(music)}
       maxWidth="1200px"
       mx="auto"
+      width={["100%", "800px"]}
       _hover={{
         bgColor: "hsla(0,0%,100%,.1)",
         cursor: "pointer",
@@ -98,18 +99,6 @@ export const ListItem: React.FC<ListItemProps> = ({
           </k.div>
         </k.div>
 
-        <k.div
-          fontSize="0.8rem"
-          display="flex"
-          alignItems="center"
-          color="#b3b3b3"
-          style={{
-            color: nowPlaying ? "#f81c55" : "#b3b3b3",
-          }}
-        >
-          <span>29,932,367</span>
-        </k.div>
-
         <k.button
           display="flex"
           gridColumn="last"
@@ -150,12 +139,9 @@ const Content = styled("div")`
   height: 56px;
   position: relative;
   padding: 0px 16px;
-  grid-gap: 16px;
   display: grid;
   align-items: center;
   padding: 0 16px;
-  grid-template-columns: [index] 16px [first] 4fr [var1] 2fr [last] minmax(
-      120px,
-      1fr
-    );
+  grid-template-columns: [index] 36px [first] 4fr [last] minmax(30px, 1fr);
+  width: 100%;
 `;
