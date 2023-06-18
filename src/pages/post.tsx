@@ -7,6 +7,7 @@ import React from "react";
 import { toast } from "react-hot-toast";
 import { utils } from "ethers";
 import { useRouter } from "next/navigation";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export default function PostPage() {
   const { provider } = useMetaMask();
@@ -144,6 +145,25 @@ export default function PostPage() {
         <k.h2 fontSize="1.2rem" fontWeight="bold">
           声モデルを投稿
         </k.h2>
+
+        <k.div>
+          <k.p fontSize="0.85rem" opacity="0.7">
+            声モデルの作成にお困りですか？完全無料で声モデル作成代行サービスを承っておりますので、お気軽に以下のフォームからご依頼ください！
+          </k.p>
+          <k.a
+            href="https://forms.gle/jg793nZZPaFi6oT87"
+            target="_blank"
+            rel="noopener noreferrer"
+            fontSize="0.85rem"
+            display="flex"
+            gap="4px"
+            color="#35d0ac"
+          >
+            声モデル作成代行サービス依頼フォーム
+            <ArrowTopRightOnSquareIcon width="15px" />
+          </k.a>
+        </k.div>
+
         <k.div display="flex" flexDir="column" gap="4px">
           <k.span fontSize="0.85rem">タイトル</k.span>
           <k.input
