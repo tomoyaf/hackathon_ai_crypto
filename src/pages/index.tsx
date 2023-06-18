@@ -5,6 +5,7 @@ import { k } from "@kuma-ui/core";
 import { Header, BottomNav, Layout, ListItem } from "@/components";
 import useSWR from "swr";
 import { Music } from "@prisma/client";
+import { usePlayer } from "@/hooks/usePlayer";
 
 export default function IndexPage() {
   const fetcher = (url: string) =>
@@ -30,5 +31,3 @@ export default function IndexPage() {
 }
 
 IndexPage.getLayout = (page: any) => <Layout withHeader>{page}</Layout>;
-
-const mock = [{}];

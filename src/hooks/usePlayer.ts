@@ -19,6 +19,10 @@ export const usePlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    audioRef.current = new Audio();
+  }, []);
+
+  useEffect(() => {
     if (isPlaying) {
       audioRef.current?.play();
     } else {
@@ -27,13 +31,21 @@ export const usePlayer = () => {
   }, [isPlaying]);
 
   const playMusic = (music: Music) => {
-    setCurrentMusic(music);
-    setIsPlaying(true);
+    if (audioRef.current) {
+      audioRef.current.src = music.url;
+      audioRef.current.play();
+      setCurrentMusic(music);
+      setIsPlaying(true);
+    }
   };
 
   const stopMusic = () => {
-    setCurrentMusic(null);
-    setIsPlaying(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setCurrentMusic(null);
+      setIsPlaying(false);
+    }
   };
 
   const isMusicPlaying = (music: Music) => {

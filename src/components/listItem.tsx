@@ -1,12 +1,15 @@
 import React from "react";
 import { k, styled, css } from "@kuma-ui/core";
 import { Music } from "@prisma/client";
+import { usePlayer } from "@/hooks/usePlayer";
 
 export type ListItemProps = {
   music: Music;
 };
 
 export const ListItem: React.FC<ListItemProps> = ({ music }) => {
+  const { handlePlayButtonClick } = usePlayer();
+
   return (
     <k.div
       role="row"
@@ -19,7 +22,7 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
     >
       <Content>
         <div className={css({ display: "flex" })}>
-          <button>
+          <button onClick={() => handlePlayButtonClick(music)}>
             <svg
               role="img"
               height="16px"
