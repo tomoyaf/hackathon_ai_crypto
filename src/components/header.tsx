@@ -18,7 +18,8 @@ export const Header: React.FC<HeaderProps> = () => {
       position="fixed"
       top="8px"
       zIndex="30"
-      bg="linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%)"
+      bg="linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%)"
+      style={{ backdropFilter: "blur(4px)" }}
     >
       <k.ol
         display="flex"

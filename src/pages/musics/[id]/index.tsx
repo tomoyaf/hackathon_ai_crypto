@@ -20,10 +20,7 @@ export default function IndexPage({ initialData }: ServerProps) {
   );
 
   return (
-    <k.div
-      className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll"
-      height="100vh"
-    >
+    <k.div className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll flex-wrap">
       <Upper>
         <UpperContent className={css({ bgColor: "#32304d" })} />
         <UpperContent
@@ -39,6 +36,7 @@ export default function IndexPage({ initialData }: ServerProps) {
           zIndex="1"
           flexDir="row"
           maxWidth="1200px"
+          flexWrap="wrap"
           m="0 auto"
           gap="24px"
           style={{
@@ -55,7 +53,13 @@ export default function IndexPage({ initialData }: ServerProps) {
               alt={data.title}
             />
           </k.div>
-          <k.div display="flex" justify="center" flexDir="column" zIndex="1">
+          <k.div
+            display="flex"
+            justify="center"
+            flexDir="column"
+            zIndex="1"
+            width="800px"
+          >
             <k.h1 fontSize="3rem" color="white" fontWeight={900}>
               {data.title}
             </k.h1>

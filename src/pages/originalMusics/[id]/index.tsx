@@ -1,4 +1,4 @@
-import { Layout, SongListItem } from "@/components";
+import { Layout, ListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
 import React from "react";
 import { InferGetServerSidePropsType } from "next";
@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { VoiceModel, Music } from "@prisma/client";
 
 type VoiceModelWithMusics = VoiceModel & {
-  musics: Music[];
+  musics: (Music & { isLiked: boolean; voiceModel: VoiceModel })[];
 };
 type ServerProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -19,11 +19,18 @@ export default function IndexPage({ initialData }: ServerProps) {
     (url: string) => fetch(url).then((res) => res.json())
   );
 
+  const updateEvaluation = (musicId: string) => (evaluation: number) => {
+    fetch(`/api/musics/${musicId}/evaluation`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ evaluation }),
+    });
+  };
+
   return (
-    <k.div
-      className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll"
-      height="100vh"
-    >
+    <k.div display="flex" flexDir="column">
       <Upper>
         <UpperContent className={css({ bgColor: "#32304d" })} />
         <UpperContent
@@ -66,7 +73,13 @@ export default function IndexPage({ initialData }: ServerProps) {
       <k.div mt="50px"></k.div>
 
       {data?.musics?.map((m, i) => {
-        return <SongListItem music={m} key={m.id} />;
+        return (
+          <ListItem
+            music={m}
+            updateEvaluation={updateEvaluation(m.id)}
+            key={m.id}
+          />
+        );
       })}
     </k.div>
   );
@@ -83,7 +96,7 @@ const Upper = styled("div")`
   max-width: none;
   overflow: hidden;
   position: relative;
-  padding: 0px 24px 24px;
+  padding: 0px 24px 48px;
 `;
 
 const UpperContent = styled("div")`

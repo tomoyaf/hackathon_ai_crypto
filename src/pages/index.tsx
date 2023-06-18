@@ -4,8 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import { k } from "@kuma-ui/core";
 import { Header, BottomNav, Layout, ListItem } from "@/components";
 import useSWR from "swr";
-import { Music } from "@prisma/client";
-import { usePlayer } from "@/hooks/usePlayer";
+import { Music, VoiceModel } from "@prisma/client";
 
 export default function IndexPage() {
   const fetcher = (url: string) =>
@@ -14,10 +13,9 @@ export default function IndexPage() {
         "Content-Type": "application/json",
       },
     }).then((res) => res.json());
-  const { data } = useSWR<{ musics: (Music & { isLiked: boolean })[] }>(
-    `/api/musics`,
-    fetcher
-  );
+  const { data } = useSWR<{
+    musics: (Music & { isLiked: boolean; voiceModel: VoiceModel })[];
+  }>(`/api/musics`, fetcher);
 
   const updateEvaluation = (musicId: string) => (evaluation: number) => {
     fetch(`/api/musics/${musicId}/evaluation`, {

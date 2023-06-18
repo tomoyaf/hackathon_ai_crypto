@@ -136,11 +136,12 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
       )}
       <nav
         className={css({
-          bg: "linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.98) 100%)",
+          bg: "linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.98) 100%)",
           width: "800px",
           maxWidth: "100%",
           borderRadius: ["0", "8px"],
         })}
+        style={{ backdropFilter: "blur(4px)" }}
       >
         <ol className="flex justify-around items-center">
           {links.map((link) => (
@@ -167,7 +168,7 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
 };
 
 const FloatingBar = styled("div")`
-  background: #523636;
+  background: linear-gradient(175deg, #d2144e 0%, #a3193f 100%);
   border-radius: 6px;
   display: flex;
   flex-direction: row;
@@ -182,7 +183,7 @@ const FloatingBar = styled("div")`
   z-index: 1;
   width: 800px;
   max-width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 
   @media screen and (max-width: 768px) {
     margin-bottom: 0px;

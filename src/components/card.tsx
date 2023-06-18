@@ -31,7 +31,7 @@ export const Card: React.FC<CardProps> = ({
         flexDir="column"
         transition="opacity ease 220ms"
         _hover={{ opacity: 0.7 }}
-        bg="linear-gradient(175deg, rgb(27 40 46) 0%, rgb(8 19 43) 100%)"
+        bg="linear-gradient(175deg, rgb(27 40 46) 0%, rgb(5 14 33) 100%)"
       >
         <k.img
           src={imageUrl}

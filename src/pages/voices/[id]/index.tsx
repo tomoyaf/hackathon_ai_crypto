@@ -88,6 +88,7 @@ export default function IndexPage({ initialData }: ServerProps) {
           </k.div>
         </k.div>
       </Upper>
+
       <k.div mt="50px"></k.div>
 
       {data.musics.map((m, i) => {
@@ -108,7 +109,7 @@ const Upper = styled("div")`
   max-width: none;
   overflow: hidden;
   position: relative;
-  padding: 0px 24px 24px;
+  padding: 0px 24px 48px;
 `;
 
 const UpperContent = styled("div")`

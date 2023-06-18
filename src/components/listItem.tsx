@@ -1,12 +1,13 @@
 import React from "react";
 import { k, styled, css } from "@kuma-ui/core";
-import { Music } from "@prisma/client";
+import { Music, VoiceModel } from "@prisma/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import { HeartIcon as HeartOutlineIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 export type ListItemProps = {
-  music: Music & { isLiked: boolean };
+  music: Music & { isLiked: boolean; voiceModel: VoiceModel };
   updateEvaluation: (evaluation: number) => void;
 };
 
@@ -33,7 +34,8 @@ export const ListItem: React.FC<ListItemProps> = ({
       onClick={() => handlePlayButtonClick(music)}
       maxWidth="1200px"
       mx="auto"
-      width={["100%", "800px"]}
+      width={["100%", "500px", "800px"]}
+      borderRadius="4px"
       _hover={{
         bgColor: "hsla(0,0%,100%,.1)",
         cursor: "pointer",
@@ -80,23 +82,47 @@ export const ListItem: React.FC<ListItemProps> = ({
             aria-hidden="false"
             draggable="false"
             loading="eager"
-            src="https://i.scdn.co/image/ab67616d00001e02f5c5c21c1bd67ae9fc86064c"
+            src={music.thumbnailUrl}
+            borderRadius="4px"
             alt=""
             width="40px"
             height="40px"
             mr="16px"
             flexShrink={0}
           />
+
           <k.div
-            fontSize="1rem"
+            fontSize="0.85rem"
             fontWeight={400}
             color="white"
+            _hover={{
+              textDecoration: "underline",
+            }}
             style={{
               color: nowPlaying ? "#f81c55" : "white",
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {music.title}
+            <Link href={`/musics/${music.id}`}>{music.title}</Link>
           </k.div>
+        </k.div>
+
+        <k.div
+          overflow="hidden"
+          fontSize="0.85rem"
+          opacity={0.7}
+          _hover={{
+            textDecoration: "underline",
+          }}
+          style={{
+            whiteSpace: "nowrap",
+            color: nowPlaying ? "#f81c55" : "white",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Link href={`/voices/${music.voiceModel.id}`}>
+            {music.voiceModel.title}
+          </Link>
         </k.div>
 
         <k.button
@@ -142,6 +168,9 @@ const Content = styled("div")`
   display: grid;
   align-items: center;
   padding: 0 16px;
-  grid-template-columns: [index] 36px [first] 4fr [last] minmax(30px, 1fr);
+  grid-template-columns: [index] 36px [first] 6fr [second] 4fr [last] minmax(
+      30px,
+      1fr
+    );
   width: 100%;
 `;

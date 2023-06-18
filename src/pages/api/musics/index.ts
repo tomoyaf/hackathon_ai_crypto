@@ -29,6 +29,7 @@ export default async function handler(
       },
       include: {
         musicEvaluations: true,
+        voiceModel: true,
       },
     });
 
