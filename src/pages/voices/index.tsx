@@ -1,5 +1,5 @@
-import { k } from "@kuma-ui/core";
-import { Layout } from "@/components";
+import { k, styled } from "@kuma-ui/core";
+import { Layout, SongItem } from "@/components";
 import React from "react";
 import useSWR from "swr";
 import { VoiceModel } from "@prisma/client";
@@ -39,18 +39,34 @@ export default function VoiceIndexPage() {
                   flexDir="column"
                   transition="opacity ease 220ms"
                   borderRadius="8px"
-                  bg="linear-gradient(175deg, rgb(8 37 52) 0%, rgb(3 14 36) 100%)"
+                  p="16px"
+                  // bg="linear-gradient(175deg, rgb(8 37 52) 0%, rgb(3 14 36) 100%)"
+                  bg="#25232d"
                   overflow="hidden"
                   _hover={{ opacity: 0.7 }}
                 >
-                  <k.img src={voiceModel.thumbnailUrl} width="200" />
-                  <k.div m="6px 0 0" p="4px 12px 0">
+                  <k.div mb="16px" position="relative">
+                    <k.div pb="100%">
+                      <k.img
+                        src={voiceModel.thumbnailUrl}
+                        width="100%"
+                        height="100%"
+                        position="absolute"
+                        top="0"
+                        left="0"
+                        borderRadius="4px"
+                      />
+                    </k.div>
+                  </k.div>
+
+                  <k.div m="0 0" p="0px 12px 0">
                     {voiceModel.title}
                   </k.div>
                   <k.div fontSize="0.85rem" color="#bbb" p="0 12px 8px">
                     {voiceModel.description}
                   </k.div>
                 </k.div>
+                {/* <SongItem voiceModel={voiceModel} key={voiceModel.id} /> */}
               </Link>
             ))}
           </k.div>
