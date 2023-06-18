@@ -37,7 +37,17 @@ export const SongItem: FC<{
         <k.div m="0 0" p="0px 12px 0">
           {voiceModel.title}
         </k.div>
-        <k.div fontSize="0.85rem" color="#bbb" p="0 12px 8px">
+        <k.div
+          fontSize="0.85rem"
+          color="#bbb"
+          p="0 12px 8px"
+          overflow="hidden"
+          // className="text-ellipsis whitespace-nowrap"
+          style={{
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {voiceModel.description}
         </k.div>
       </k.div>
