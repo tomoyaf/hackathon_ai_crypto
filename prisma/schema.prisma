@@ -70,6 +70,7 @@ model VoiceModel {
   id      String    @id @default(cuid())
   url     String
   userId  String
+  voiceId Int
   title String
   thumbnailUrl String
   description String
