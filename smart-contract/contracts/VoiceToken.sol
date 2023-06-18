@@ -14,8 +14,8 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     CountersUpgradeable.Counter private _tokenIdCounter;
     CountersUpgradeable.Counter private _voiceIdCounter;
 
-    uint256 private constant ADD_ITEM_PRICE = 5 ether; // 5 matic
-    uint256 private constant MINT_COMMISSION_RATE = 500; // 5%
+    uint256 private addItemPrice;
+    uint256 private mintCommissionRate;
 
     struct MintableItem {
         address royaltyReceiver;
@@ -45,12 +45,24 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         __ERC721Enumerable_init();
         __ERC721URIStorage_init();
         __Ownable_init();
+
+        addItemPrice = 0.5 ether; // 0.5 matic
+        mintCommissionRate = 100; // 1%
+    }
+
+    function getCurrentSetting() public view onlyOwner returns (uint256, uint256) {
+        return (addItemPrice, mintCommissionRate);
+    }
+
+    function setSetting(uint256 newAddItemPrice, uint256 newMintCommissionRate) public onlyOwner {
+        addItemPrice = newAddItemPrice;
+        mintCommissionRate = newMintCommissionRate;
     }
 
     // ユーザーがmintableなアイテムを追加する
     function requestAddMintableItem(uint256 price, uint256 maxSupply, uint256 royaltyRate) public payable {
         require(royaltyRate <= 10000, "Royalty rate is too high"); // 10000 means 100%, as rate is in basis points
-        require(msg.value == ADD_ITEM_PRICE, "invalid commison fee");
+        require(msg.value == addItemPrice, "invalid commison fee");
         payable(owner()).transfer(msg.value);
 
         uint256 voiceId = _voiceIdCounter.current();
@@ -72,7 +84,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     function refundAddMintableItemFee(uint256 voiceId) public payable onlyOwner {
         MintableItem memory item = _mintableItems[voiceId];
         require(!item.accepted, "Item is already accepted");
-        payable(item.royaltyReceiver).transfer(ADD_ITEM_PRICE);
+        payable(item.royaltyReceiver).transfer(addItemPrice);
 
         delete _mintableItems[voiceId];
     }
@@ -88,8 +100,12 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         _mintableItems[voiceId] = item;
     }
 
-    function calcMintPrice(uint256 price) private pure returns (uint256, uint256) {
-        uint256 ownerCommision = (price * MINT_COMMISSION_RATE) / 10000;
+    function calcMintPrice(uint256 price) private view returns (uint256, uint256) {
+        if (price == 0) {
+            return (0, 0);
+        }
+
+        uint256 ownerCommision = (price * mintCommissionRate) / 10000;
         return (price, ownerCommision);
     }
 
@@ -141,8 +157,12 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
         uint256 voiceId = _voiceIds[tokenId];
         MintableItem memory item = _mintableItems[voiceId];
-        uint256 royalty = (salePrice * item.royaltyRate) / 10000; // as royaltyRate is in basis points
 
+        if (salePrice == 0) {
+            return (item.royaltyReceiver, 0);
+        }
+
+        uint256 royalty = (salePrice * item.royaltyRate) / 10000; // as royaltyRate is in basis points
         return (item.royaltyReceiver, royalty);
     }
 

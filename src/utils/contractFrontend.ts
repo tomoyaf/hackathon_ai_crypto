@@ -3,7 +3,8 @@ import { ethers } from "ethers";
 import compiledInfo from "../../smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
 import { VoiceToken } from "../../smart-contract/typechain-types";
 
-export const CONTRACT_ADDRESS = "0x65048b48FC112FeBF3D5aEC9663E093597415c4c";
+export const CONTRACT_ADDRESS = "0xD6d5dBABDF3F125CBfab0DDcD5bFB5c930FB45C3";
+export const ADD_ITEM_PRICE = ethers.utils.parseEther("0.5"); // 0.5 MATIC
 const CHAIN_RPC_URL = "https://matic-mumbai.chainstacklabs.com";
 
 export type VoiceTokenType = Omit<VoiceToken, keyof ethers.BaseContract> &
@@ -26,12 +27,24 @@ export async function createMetaMaskProvider(
 }
 
 export function connectContract(
-  signerOrProvider: ethers.providers.Provider | ethers.Signer
+  provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
 ): VoiceTokenType {
+  const signer = provider.getSigner(0);
   const contract = new ethers.Contract(
     CONTRACT_ADDRESS,
     compiledInfo.abi,
-    signerOrProvider
+    signer
   ) as VoiceTokenType;
   return contract as VoiceTokenType;
+}
+
+export function extractVoiceIdFromTxResult(
+  receipt: ethers.ContractReceipt
+): number | undefined {
+  const voiceId = receipt.events?.find(
+    (e) => e.event === "SuccessRequestAddItem"
+  )?.args?.[1];
+
+  // BigNumberをnumberに変換する
+  return voiceId ? +voiceId.toString() : undefined;
 }

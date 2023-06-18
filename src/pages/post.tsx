@@ -1,15 +1,33 @@
 import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
+import { useMetaMask } from "@/hooks/useContract";
+import * as contractUtils from "@/utils/contractFrontend";
 import React from "react";
 import { toast } from "react-hot-toast";
+import { utils } from "ethers";
 
 export default function PostPage() {
-  const [formState, setFormState] = React.useState({
+  const { provider } = useMetaMask();
+  const [contract, setContract] =
+    React.useState<contractUtils.VoiceTokenType | null>(null);
+  const [formState, setFormState] = React.useState<{
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    rvcModelUrl: string;
+    price: number;
+    royaltyRate: number;
+    maxSupply: number;
+    voiceId?: number;
+  }>({
     title: "",
     description: "",
     thumbnailUrl: "",
     rvcModelUrl: "",
+    price: 100,
+    royaltyRate: 5,
+    maxSupply: 100,
   });
 
   const handleChangeThumbnail =
@@ -44,17 +62,56 @@ export default function PostPage() {
       }
     };
 
+  // コントラクターへの登録
+  const registerToContract = async () => {
+    const _contract = (() => {
+      if (contract) return contract;
+      if (provider) {
+        const _contract = contractUtils.connectContract(provider);
+        setContract(_contract);
+        return _contract;
+      }
+
+      throw new Error("コントラクターへの登録に失敗しました");
+    })();
+
+    const tx = await _contract.requestAddMintableItem(
+      utils.parseEther(formState.price.toString()),
+      formState.maxSupply,
+      formState.royaltyRate * 100,
+      { value: contractUtils.ADD_ITEM_PRICE }
+    );
+
+    console.log("start transaction");
+    const receipt = await tx.wait();
+    console.log(receipt);
+    const voiceId = contractUtils.extractVoiceIdFromTxResult(receipt);
+
+    if (!voiceId) throw new Error("コントラクターへの登録に失敗しました");
+
+    console.log("voiceId", voiceId);
+
+    setFormState((s) => ({
+      ...s,
+      voiceId,
+    }));
+  };
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     await toast.promise(
-      fetch("/api/voiceModels", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formState),
-      }),
+      (async () => {
+        await registerToContract();
+
+        await fetch("/api/voiceModels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formState),
+        });
+      })(),
       {
         loading: "アップロード中です",
         success: "アップロードが完了しました",
@@ -101,6 +158,63 @@ export default function PostPage() {
             }
             required
             min={1}
+          />
+        </k.div>
+        <k.div display="flex" flexDir="column" gap="4px">
+          <k.span fontSize="0.85rem">販売価格(Matic)</k.span>
+          <k.input
+            type="number"
+            p="4px 8px"
+            borderRadius="4px"
+            color="#2e3855"
+            value={formState.price}
+            step={0.01}
+            onChange={(e) =>
+              setFormState((s) => ({
+                ...s,
+                price: +e.target.value,
+              }))
+            }
+            required
+          />
+        </k.div>
+        <k.div display="flex" flexDir="column" gap="4px">
+          <k.span fontSize="0.85rem">転売還元率(%)</k.span>
+          <k.input
+            type="number"
+            p="4px 8px"
+            borderRadius="4px"
+            color="#2e3855"
+            value={formState.royaltyRate}
+            onChange={(e) =>
+              setFormState((s) => ({
+                ...s,
+                royaltyRate: +e.target.value,
+              }))
+            }
+            required
+            min={0}
+            max={100}
+          />
+        </k.div>
+        <k.div display="flex" flexDir="column" gap="4px">
+          <k.span fontSize="0.85rem">
+            流通量 (0で設定すると無制限になります)
+          </k.span>
+          <k.input
+            type="number"
+            p="4px 8px"
+            borderRadius="4px"
+            color="#2e3855"
+            value={formState.maxSupply}
+            onChange={(e) =>
+              setFormState((s) => ({
+                ...s,
+                maxSupply: +e.target.value,
+              }))
+            }
+            required
+            min={0}
           />
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
@@ -181,7 +295,22 @@ export default function PostPage() {
           </k.label>
         </k.div>
 
-        {/* eth連携してない場合は連携処理する */}
+        {/* metamask連携とcontractへの登録処理のデバッグボタン 削除してもよし！ */}
+
+        {/* <k.button
+          type="button"
+          borderRadius="8px"
+          bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
+          fontWeight="bold"
+          transition="opacity ease 220ms"
+          _hover={{
+            opacity: 0.7,
+          }}
+          onClick={() => registerToContract()}
+          p="8px 0"
+        >
+          test
+        </k.button> */}
 
         <k.button
           type="submit"

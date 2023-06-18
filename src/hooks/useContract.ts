@@ -30,24 +30,12 @@ export function useMetaMask() {
   return { provider, accounts };
 }
 
-export function useContract(provider?: ethers.providers.Web3Provider) {
-  const [contract, setContract] = useState<contractUtils.VoiceTokenType>();
+// export function useContract(provider?: ethers.providers.Web3Provider) {
+//   const [contract, setContract] = useState<contractUtils.VoiceTokenType>();
 
-  useEffect(() => {
-    if (provider) setContract(contractUtils.connectContract(provider));
-  }, [provider]);
+//   useEffect(() => {
+//     if (provider) setContract(contractUtils.connectContract(provider));
+//   }, [provider]);
 
-  return contract;
-}
-
-// 使い方メモ
-// metamaskを使ってcontractに接続する
-// import {useMetaMask, useContract} from "@/hooks/useContract";
-// const {provider} = useMetaMask()
-// const contract = useContract(provider)
-
-// アカウントを接続しないで、contractに接続する(参照系のみ実行可能)
-// import {createReadOnlyProvider} from "@/utils/contractFrontend";
-// import {useContract} from "@/hooks/useContract";
-// const provider = createReadOnlyProvider()
-// const contract = useContract(provider)
+//   return contract;
+// }
