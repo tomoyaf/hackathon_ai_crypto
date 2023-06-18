@@ -22,20 +22,34 @@ export async function createMetaMaskProvider(
     | ethers.providers.JsonRpcFetchFunc
 ) {
   const provider = new ethers.providers.Web3Provider(providerSrc);
-  const accounts = await provider.send("eth_requestAccounts", []);
+  const accounts: string[] = await provider.send("eth_requestAccounts", []);
   return { provider, accounts };
 }
 
 export function connectContract(
   provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
 ): VoiceTokenType {
-  const signer = provider.getSigner(0);
+  const signerOrProvider =
+    provider instanceof ethers.providers.Web3Provider
+      ? provider.getSigner()
+      : provider;
   const contract = new ethers.Contract(
     CONTRACT_ADDRESS,
     compiledInfo.abi,
-    signer
+    signerOrProvider
   ) as VoiceTokenType;
   return contract as VoiceTokenType;
+}
+
+export function changeProvider(
+  contract: VoiceTokenType,
+  provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
+) {
+  const signerOrProvider =
+    provider instanceof ethers.providers.Web3Provider
+      ? provider.getSigner()
+      : provider;
+  return contract.connect(signerOrProvider) as VoiceTokenType;
 }
 
 export function extractVoiceIdFromTxResult(
