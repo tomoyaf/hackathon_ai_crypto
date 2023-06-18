@@ -1,6 +1,6 @@
-import { atom } from "recoil";
+import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { Music } from "@prisma/client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 
 export const isPlayingAtom = atom<boolean>({
@@ -18,10 +18,10 @@ export const audioAtom = atom<HTMLAudioElement | null>({
   default: null,
 });
 
-export const usePlayer = () => {
+export const usePlayerInit = () => {
   const [isPlaying, setIsPlaying] = useRecoilState(isPlayingAtom);
-  const [currentMusic, setCurrentMusic] = useRecoilState(currentMusicAtom);
-  const [audio, setAudio] = useRecoilState(audioAtom);
+  const setCurrentMusic = useSetRecoilState(currentMusicAtom);
+  const audio = useRecoilValue(audioAtom);
 
   useEffect(() => {
     if (isPlaying) {
@@ -30,6 +30,31 @@ export const usePlayer = () => {
       audio?.pause();
     }
   }, [isPlaying]);
+
+  useEffect(() => {
+    return () => {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        setCurrentMusic(null);
+        setIsPlaying(false);
+      }
+    };
+  }, []);
+};
+
+export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  usePlayerInit();
+
+  return children;
+};
+
+export const usePlayer = () => {
+  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingAtom);
+  const [currentMusic, setCurrentMusic] = useRecoilState(currentMusicAtom);
+  const [audio, setAudio] = useRecoilState(audioAtom);
 
   const playMusic = async (music: Music) => {
     if (audio) {
@@ -72,12 +97,6 @@ export const usePlayer = () => {
       playMusic(music);
     }
   };
-
-  useEffect(() => {
-    return () => {
-      stopMusic();
-    };
-  }, []);
 
   return {
     isPlaying,

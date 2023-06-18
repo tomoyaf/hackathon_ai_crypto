@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
-import { AppContext, AppInitialProps, AppLayoutProps } from "next/app";
+import { AppLayoutProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import "../app/globals.css";
 import { Toaster } from "react-hot-toast";
 import { RecoilRoot } from "recoil";
+import { PlayerProvider } from "@/hooks/usePlayer";
 
 function App({
   Component,
@@ -13,8 +14,10 @@ function App({
   return (
     <RecoilRoot>
       <SessionProvider session={session}>
-        <Toaster />
-        {getLayout(<Component {...pageProps} />)}
+        <PlayerProvider>
+          <Toaster />
+          {getLayout(<Component {...pageProps} />)}
+        </PlayerProvider>
       </SessionProvider>
     </RecoilRoot>
   );
