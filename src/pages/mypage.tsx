@@ -13,6 +13,7 @@ import {
 } from "@prisma/client";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { Card } from "@/components/card";
 
 export default function IndexPage() {
   const { status, data: session } = useSession();
@@ -141,32 +142,12 @@ export default function IndexPage() {
               </k.div>
             ) : (
               myInfo?.voiceModels.map((voiceModel) => (
-                <Link href={`/voices/${voiceModel.id}`}>
-                  <k.div
-                    width="250px"
-                    height="300px"
-                    overflow="hidden"
-                    borderRadius="4px"
-                    display="flex"
-                    flexDir="column"
-                    transition="opacity ease 220ms"
-                    _hover={{ opacity: 0.7 }}
-                    bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
-                  >
-                    <k.img
-                      src={voiceModel.thumbnailUrl}
-                      width="250px"
-                      height="180px"
-                      style={{ objectFit: "cover" }}
-                    />
-                    <k.div m="12px 0 4px" p="0 12px">
-                      {voiceModel.title}
-                    </k.div>
-                    <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
-                      {voiceModel.description}
-                    </k.div>
-                  </k.div>
-                </Link>
+                <Card
+                  href={`/voices/${voiceModel.id}`}
+                  imageUrl={voiceModel.thumbnailUrl}
+                  title={voiceModel.title}
+                  description={voiceModel.description}
+                />
               ))
             )}
           </k.div>
@@ -200,32 +181,12 @@ export default function IndexPage() {
               </k.div>
             ) : (
               myInfo?.originalMusics.map((originalMusic) => (
-                <Link href={`/originalMusics/${originalMusic.id}`}>
-                  <k.div
-                    width="250px"
-                    height="300px"
-                    overflow="hidden"
-                    borderRadius="4px"
-                    display="flex"
-                    flexDir="column"
-                    transition="opacity ease 220ms"
-                    _hover={{ opacity: 0.7 }}
-                    bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
-                  >
-                    <k.img
-                      src={originalMusic.thumbnailUrl}
-                      width="250px"
-                      height="180px"
-                      style={{ objectFit: "cover" }}
-                    />
-                    <k.div m="12px 0 4px" p="0 12px">
-                      {originalMusic.title}
-                    </k.div>
-                    <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
-                      {originalMusic.description}
-                    </k.div>
-                  </k.div>
-                </Link>
+                <Card
+                  href={`/originalMusics/${originalMusic.id}`}
+                  imageUrl={originalMusic.thumbnailUrl}
+                  title={originalMusic.title}
+                  description={originalMusic.description}
+                />
               ))
             )}
           </k.div>
@@ -255,32 +216,12 @@ export default function IndexPage() {
               </k.div>
             ) : (
               myInfo?.musicEvaluations.map((musicEvaluation) => (
-                <Link href={`/musics/${musicEvaluation.musicId}`}>
-                  <k.div
-                    width="250px"
-                    height="300px"
-                    overflow="hidden"
-                    borderRadius="4px"
-                    display="flex"
-                    flexDir="column"
-                    transition="opacity ease 220ms"
-                    _hover={{ opacity: 0.7 }}
-                    bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
-                  >
-                    <k.img
-                      src={musicEvaluation.music.thumbnailUrl}
-                      width="250px"
-                      height="180px"
-                      style={{ objectFit: "cover" }}
-                    />
-                    <k.div m="12px 0 4px" p="0 12px">
-                      {musicEvaluation.music.title}
-                    </k.div>
-                    <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
-                      {musicEvaluation.music.description}
-                    </k.div>
-                  </k.div>
-                </Link>
+                <Card
+                  href={`/musics/${musicEvaluation.musicId}`}
+                  imageUrl={musicEvaluation.music.thumbnailUrl}
+                  title={musicEvaluation.music.title}
+                  description={musicEvaluation.music.description}
+                />
               ))
             )}
           </k.div>

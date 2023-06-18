@@ -4,6 +4,7 @@ import React from "react";
 import useSWR from "swr";
 import { VoiceModel } from "@prisma/client";
 import Link from "next/link";
+import { Card } from "@/components/card";
 
 export default function VoiceIndexPage() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -32,7 +33,13 @@ export default function VoiceIndexPage() {
         ) : (
           <k.div display="flex" flexWrap="wrap" width="100%" gap="24px">
             {data?.map((voiceModel) => (
-              <SongItem voiceModel={voiceModel} key={voiceModel.id} />
+              <Card
+                key={voiceModel.id}
+                href={`/voices/${voiceModel.id}`}
+                imageUrl={voiceModel.thumbnailUrl}
+                title={voiceModel.title}
+                description={voiceModel.description}
+              />
             ))}
           </k.div>
         )}

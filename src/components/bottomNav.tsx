@@ -72,10 +72,12 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
   return (
     <k.div
       position="fixed"
-      bottom="0px"
+      bottom={["0", "8px"]}
       width="100%"
       display="flex"
       flexDir="column"
+      alignItems="center"
+      justify="center"
     >
       {currentMusic && (
         <FloatingBar>
@@ -135,6 +137,9 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
       <nav
         className={css({
           bg: "linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.98) 100%)",
+          width: "800px",
+          maxWidth: "100%",
+          borderRadius: ["0", "8px"],
         })}
       >
         <ol className="flex justify-around items-center">
@@ -142,7 +147,7 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
             <li key={link.url} className="flex-1">
               <Link
                 href={link.url}
-                className="flex h-[54px] w-full justify-center items-center flex-col gap-[1px]"
+                className="flex h-[54px] md:h-[62px] w-full justify-center items-center flex-col gap-[1px]"
               >
                 {link.renderIcon({ isSelected: link.url === router.pathname })}
                 <span
@@ -175,4 +180,11 @@ const FloatingBar = styled("div")`
   -webkit-transition: background-color 0.2s ease-in-out;
   transition: background-color 0.2s ease-in-out;
   z-index: 1;
+  width: 800px;
+  max-width: 100%;
+  margin-bottom: 12px;
+
+  @media screen and (max-width: 768px) {
+    margin-bottom: 0px;
+  }
 `;
