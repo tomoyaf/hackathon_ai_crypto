@@ -1,7 +1,12 @@
 import React from "react";
 import { k, styled, css } from "@kuma-ui/core";
+import { Music } from "@prisma/client";
 
-export const ListItem = () => {
+export type ListItemProps = {
+  music: Music;
+};
+
+export const ListItem: React.FC<ListItemProps> = ({ music }) => {
   return (
     <k.div
       role="row"
@@ -46,7 +51,7 @@ export const ListItem = () => {
             flexShrink={0}
           />
           <k.div fontSize="1rem" fontWeight={400} color="white">
-            残機
+            {music.title}
           </k.div>
         </k.div>
         <k.div

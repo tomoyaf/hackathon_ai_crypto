@@ -3,9 +3,17 @@ import React from "react";
 import { signIn, useSession } from "next-auth/react";
 import { k } from "@kuma-ui/core";
 import { Header, BottomNav, Layout, ListItem } from "@/components";
+import useSWR from "swr";
+import { Music } from "@prisma/client";
 
 export default function IndexPage() {
-  const items = useFeedItems();
+  const fetcher = (url: string) =>
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+  const { data } = useSWR<{ musics: Music[] }>(`/api/musics`, fetcher);
 
   return (
     <k.div
@@ -14,8 +22,8 @@ export default function IndexPage() {
     >
       <k.div mt="100px"></k.div>
 
-      {[...Array(50)].map((k, i) => {
-        return <ListItem key={i} />;
+      {data?.musics?.map((item, i) => {
+        return <ListItem music={item} key={i} />;
       })}
     </k.div>
   );
