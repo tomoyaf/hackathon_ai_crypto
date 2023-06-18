@@ -33,14 +33,16 @@ export const usePlayer = () => {
 
   const playMusic = async (music: Music) => {
     if (audio) {
-      audio.pause();
-      audio.onpause = () => {
+      if (currentMusic?.id === music.id) {
+        audio.play();
+      } else {
+        audio.pause();
         const newAudio = new Audio(music.url);
         newAudio.play();
         setAudio(newAudio);
         setCurrentMusic(music);
-        setIsPlaying(true);
-      };
+      }
+      setIsPlaying(true);
     } else {
       const newAudio = new Audio(music.url);
       newAudio.play();
