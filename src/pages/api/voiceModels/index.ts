@@ -2,6 +2,7 @@ import prisma from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
+import * as contractService from "@/services/contract";
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,17 +37,19 @@ export default async function handler(
           return;
         }
 
-        const { title, description, thumbnailUrl, rvcModelUrl } = req.body;
+        const { title, description, thumbnailUrl, rvcModelUrl, voiceId } =
+          req.body;
 
         if (
           title == null ||
           description == null ||
           thumbnailUrl == null ||
-          rvcModelUrl == null
+          rvcModelUrl == null ||
+          voiceId == null
         ) {
           res.status(400).json({
             message: "不正なreq.body",
-            body: { title, description, thumbnailUrl, rvcModelUrl },
+            body: { title, description, thumbnailUrl, rvcModelUrl, voiceId },
           });
           return;
         }
@@ -72,8 +75,19 @@ export default async function handler(
             thumbnailUrl,
             url: rvcModelUrl,
             userId: user.id,
+            voiceId: +voiceId,
           },
         });
+
+        // metadeta.jsonを作成
+        const tokenURL = await contractService.createTokenUrl({
+          name: title,
+          description,
+          image: thumbnailUrl,
+        });
+
+        // コントラクトに承認をリクエスト
+        await contractService.acceptAddMintableItem(voiceId, tokenURL);
 
         res.status(200).json({ savedVoiceModel });
       } catch (e) {

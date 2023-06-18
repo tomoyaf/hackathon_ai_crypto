@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { uploadFile } from "../utils/storage";
 import { ethers } from "ethers";
 // smart-contract フォルダ内でnpm run compileを実行してください
-import { abi } from "../../smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
+import compiledInfo from "../../smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
 import { VoiceToken } from "../../smart-contract/typechain-types";
 
 export async function createTokenUrl(metadata: {
@@ -35,7 +35,7 @@ export async function connectContract() {
 
   const contract = new ethers.Contract(
     process.env.CONTRACT_ADDRESS || "",
-    abi,
+    compiledInfo.abi,
     ownerWallet
   ) as VoiceTokenType;
 

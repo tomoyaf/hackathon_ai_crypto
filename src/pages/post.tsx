@@ -96,6 +96,15 @@ export default function PostPage() {
     }));
   };
 
+  const errorMessageHandler = (e: any) => {
+    switch (e.code) {
+      case -32603:
+        return "登録に必要な残高が足りません";
+      default:
+        return "アップロードに失敗しました";
+    }
+  };
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
@@ -114,7 +123,7 @@ export default function PostPage() {
       {
         loading: "アップロード中です",
         success: "アップロードが完了しました",
-        error: "アップロードに失敗しました",
+        error: (err) => errorMessageHandler(err),
       }
     );
     const savedVoiceModel = (await res.json())?.savedVoiceModel;
