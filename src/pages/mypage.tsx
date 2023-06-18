@@ -148,15 +148,17 @@ export default function IndexPage() {
                     borderRadius="4px"
                     display="flex"
                     flexDir="column"
+                    transition="opacity ease 220ms"
+                    _hover={{ opacity: 0.7 }}
                     bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
                   >
                     <k.img
                       src={voiceModel.thumbnailUrl}
                       width="250px"
-                      height="200px"
+                      height="180px"
                       style={{ objectFit: "cover" }}
                     />
-                    <k.div m="12px 0 0" p="0 12px">
+                    <k.div m="12px 0 4px" p="0 12px">
                       {voiceModel.title}
                     </k.div>
                     <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
@@ -173,9 +175,9 @@ export default function IndexPage() {
           <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
             {(myInfo?.originalMusics.length ?? 0) === 0 ? (
               <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
-                <k.p>まだ声モデルを投稿していないようです。</k.p>
+                <k.p>まだ曲を投稿していないようです。</k.p>
                 <k.p>
-                  声をNFTとして投稿することで、世界中のクリエイターにあなたの声を解放してみましょう！
+                  曲を投稿して、世界中のクリエイターの声で無限の可能性を解放してみましょう！
                 </k.p>
                 <k.div
                   borderStyle="solid"
@@ -186,8 +188,11 @@ export default function IndexPage() {
                   p="4px 24px"
                   m="20px 0 0"
                 >
-                  <Link href="/post" style={{ display: "flex", gap: "12px" }}>
-                    声モデルを投稿する
+                  <Link
+                    href="/originalMusics/post"
+                    style={{ display: "flex", gap: "12px" }}
+                  >
+                    曲を投稿する
                     <ArrowRightIcon width="24px" />
                   </Link>
                 </k.div>
@@ -202,15 +207,17 @@ export default function IndexPage() {
                     borderRadius="4px"
                     display="flex"
                     flexDir="column"
+                    transition="opacity ease 220ms"
+                    _hover={{ opacity: 0.7 }}
                     bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
                   >
                     <k.img
                       src={originalMusic.thumbnailUrl}
                       width="250px"
-                      height="200px"
+                      height="180px"
                       style={{ objectFit: "cover" }}
                     />
-                    <k.div m="12px 0 0" p="0 12px">
+                    <k.div m="12px 0 4px" p="0 12px">
                       {originalMusic.title}
                     </k.div>
                     <k.div color="#bbb" p="0 12px" fontSize="0.85rem">

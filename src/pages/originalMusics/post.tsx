@@ -1,38 +1,22 @@
 import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
-import { useFeedItems } from "@/hooks/useFeedItems";
-import { useMetaMask } from "@/hooks/useContract";
-import * as contractUtils from "@/utils/contractFrontend";
 import React from "react";
 import { toast } from "react-hot-toast";
-import { utils } from "ethers";
 import { useRouter } from "next/navigation";
-import {
-  ArrowTopRightOnSquareIcon,
-  MusicalNoteIcon,
-} from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { MicrophoneIcon } from "@heroicons/react/24/outline";
 
 export default function PostPage() {
-  const { provider } = useMetaMask();
-  const [contract, setContract] =
-    React.useState<contractUtils.VoiceTokenType | null>(null);
   const [formState, setFormState] = React.useState<{
     title: string;
     description: string;
     thumbnailUrl: string;
-    rvcModelUrl: string;
-    price: number;
-    royaltyRate: number;
-    maxSupply: number;
+    url: string;
   }>({
     title: "",
     description: "",
     thumbnailUrl: "",
-    rvcModelUrl: "",
-    price: 100,
-    royaltyRate: 5,
-    maxSupply: 100,
+    url: "",
   });
 
   const router = useRouter();
@@ -69,72 +53,29 @@ export default function PostPage() {
       }
     };
 
-  // コントラクターへの登録
-  const registerToContract = async () => {
-    const _contract = (() => {
-      if (contract) return contract;
-      if (provider) {
-        const _contract = contractUtils.connectContract(provider);
-        setContract(_contract);
-        return _contract;
-      }
-
-      throw new Error("コントラクターへの登録に失敗しました");
-    })();
-
-    // 現在の価格を取得
-    const addItemPrice = await _contract.addItemPrice();
-
-    const tx = await _contract.requestAddMintableItem(
-      utils.parseEther(formState.price.toString()),
-      formState.maxSupply,
-      formState.royaltyRate * 100,
-      { value: addItemPrice }
-    );
-
-    const receipt = await tx.wait();
-    const voiceId = contractUtils.extractVoiceIdFromTxResult(receipt);
-
-    if (!voiceId) throw new Error("コントラクターへの登録に失敗しました");
-
-    return voiceId;
-  };
-
-  const errorMessageHandler = (e: any) => {
-    console.error(e);
-    switch (e.code) {
-      case -32603:
-        return "登録に必要な残高が足りません";
-      default:
-        return "アップロードに失敗しました";
-    }
-  };
-
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     const res = await toast.promise(
       (async () => {
-        const voiceId = await registerToContract();
-
-        return await fetch("/api/voiceModels", {
+        return await fetch("/api/originalMusics", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...formState, voiceId }),
+          body: JSON.stringify(formState),
         });
       })(),
       {
         loading: "アップロード中です",
         success: "アップロードが完了しました",
-        error: (err) => errorMessageHandler(err),
+        error: "エラーが発生しました",
       }
     );
-    const savedVoiceModel = (await res.json())?.savedVoiceModel;
+    const savedOriginalMusic = (await res.json())?.savedOriginalMusic;
 
-    if (savedVoiceModel?.id != null) {
-      router.push(`/voices/${savedVoiceModel.id}`);
+    if (savedOriginalMusic?.id != null) {
+      router.push(`/originalMusics/${savedOriginalMusic.id}`);
     }
   };
 
@@ -160,26 +101,8 @@ export default function PostPage() {
         m="10vh 0 0"
       >
         <k.h2 fontSize="1.2rem" fontWeight="bold">
-          声モデルを投稿
+          曲を投稿
         </k.h2>
-
-        <k.div>
-          <k.p fontSize="0.85rem" opacity="0.7">
-            声モデルの作成にお困りですか？完全無料で声モデル作成代行サービスを承っておりますので、お気軽に以下のフォームからご依頼ください！
-          </k.p>
-          <k.a
-            href="https://forms.gle/jg793nZZPaFi6oT87"
-            target="_blank"
-            rel="noopener noreferrer"
-            fontSize="0.85rem"
-            display="flex"
-            gap="4px"
-            color="#35d0ac"
-          >
-            声モデル作成代行サービス依頼フォーム
-            <ArrowTopRightOnSquareIcon width="15px" />
-          </k.a>
-        </k.div>
 
         <k.div display="flex" flexDir="column" gap="4px">
           <k.span fontSize="0.85rem">タイトル</k.span>
@@ -197,63 +120,6 @@ export default function PostPage() {
             }
             required
             min={1}
-          />
-        </k.div>
-        <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">販売価格(Matic)</k.span>
-          <k.input
-            type="number"
-            p="4px 8px"
-            borderRadius="4px"
-            color="#2e3855"
-            value={formState.price}
-            step={0.01}
-            onChange={(e) =>
-              setFormState((s) => ({
-                ...s,
-                price: +e.target.value,
-              }))
-            }
-            required
-          />
-        </k.div>
-        <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">転売還元率(%)</k.span>
-          <k.input
-            type="number"
-            p="4px 8px"
-            borderRadius="4px"
-            color="#2e3855"
-            value={formState.royaltyRate}
-            onChange={(e) =>
-              setFormState((s) => ({
-                ...s,
-                royaltyRate: +e.target.value,
-              }))
-            }
-            required
-            min={0}
-            max={100}
-          />
-        </k.div>
-        <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">
-            流通量 (0で設定すると無制限になります)
-          </k.span>
-          <k.input
-            type="number"
-            p="4px 8px"
-            borderRadius="4px"
-            color="#2e3855"
-            value={formState.maxSupply}
-            onChange={(e) =>
-              setFormState((s) => ({
-                ...s,
-                maxSupply: +e.target.value,
-              }))
-            }
-            required
-            min={0}
           />
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
@@ -304,7 +170,7 @@ export default function PostPage() {
           </k.label>
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">RVCモデル</k.span>
+          <k.span fontSize="0.85rem">曲ファイル</k.span>
           <k.label
             cursor="pointer"
             width="fit-content"
@@ -315,12 +181,12 @@ export default function PostPage() {
           >
             <k.input
               type="file"
-              accept=".pth"
+              accept="audio/*"
               display="none"
-              onChange={handleChangeThumbnail("rvcModelUrl", "rvc_models/")}
+              onChange={handleChangeThumbnail("url", "original_musics/")}
             />
-            {formState.rvcModelUrl.length > 0 ? (
-              <k.div>{formState.rvcModelUrl}</k.div>
+            {formState.url.length > 0 ? (
+              <k.audio src={formState.url} controls />
             ) : (
               <k.div
                 p="5px 16px"
@@ -328,28 +194,11 @@ export default function PostPage() {
                 borderRadius="8px"
                 bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
               >
-                RVCモデルをアップロード
+                曲ファイルをアップロード
               </k.div>
             )}
           </k.label>
         </k.div>
-
-        {/* metamask連携とcontractへの登録処理のデバッグボタン 削除してもよし！ */}
-
-        {/* <k.button
-          type="button"
-          borderRadius="8px"
-          bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
-          fontWeight="bold"
-          transition="opacity ease 220ms"
-          _hover={{
-            opacity: 0.7,
-          }}
-          onClick={() => registerToContract()}
-          p="8px 0"
-        >
-          test
-        </k.button> */}
 
         <k.button
           type="submit"
@@ -375,7 +224,7 @@ export default function PostPage() {
         justify="center"
       >
         <Link
-          href="/originalMusics/post"
+          href="/post"
           style={{
             display: "flex",
             justifyItems: "center",
@@ -387,7 +236,7 @@ export default function PostPage() {
             padding: "4px 24px",
           }}
         >
-          曲を投稿する <MusicalNoteIcon width="18px" />
+          声モデルを投稿する <MicrophoneIcon width="18px" />
         </Link>
       </k.div>
     </k.div>
