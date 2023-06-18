@@ -205,7 +205,7 @@ export default function IndexPage() {
                     bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
                   >
                     <k.img
-                      src={originalMusic.url}
+                      src={originalMusic.thumbnailUrl}
                       width="250px"
                       height="200px"
                       style={{ objectFit: "cover" }}
@@ -236,7 +236,7 @@ const Upper = styled("div")`
   max-width: none;
   overflow: hidden;
   position: relative;
-  padding: 0px 24px 24px;
+  padding: 0px 24px 48px;
 `;
 
 const UpperContent = styled("div")`
