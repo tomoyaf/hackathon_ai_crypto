@@ -8,7 +8,9 @@ export type ListItemProps = {
 };
 
 export const ListItem: React.FC<ListItemProps> = ({ music }) => {
-  const { handlePlayButtonClick } = usePlayer();
+  const { handlePlayButtonClick, currentMusic, isMusicPlaying } = usePlayer();
+
+  const nowPlaying = currentMusic?.id === music.id && !!isMusicPlaying(music);
 
   return (
     <k.div
@@ -23,17 +25,31 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
       <Content>
         <div className={css({ display: "flex" })}>
           <button onClick={() => handlePlayButtonClick(music)}>
-            <svg
-              role="img"
-              height="16px"
-              width="16px"
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              data-encore-id="icon"
-              fill="white"
-            >
-              <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path>
-            </svg>
+            {!nowPlaying ? (
+              <svg
+                role="img"
+                height="16px"
+                width="16px"
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                data-encore-id="icon"
+                fill="white"
+              >
+                <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path>
+              </svg>
+            ) : (
+              <svg
+                role="img"
+                height="16px"
+                width="16px"
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                data-encore-id="icon"
+                fill="#f81c55"
+              >
+                <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
+              </svg>
+            )}
           </button>
         </div>
         <k.div
@@ -53,7 +69,14 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
             mr="16px"
             flexShrink={0}
           />
-          <k.div fontSize="1rem" fontWeight={400} color="white">
+          <k.div
+            fontSize="1rem"
+            fontWeight={400}
+            color="white"
+            style={{
+              color: nowPlaying ? "#f81c55" : "white",
+            }}
+          >
             {music.title}
           </k.div>
         </k.div>
@@ -62,6 +85,9 @@ export const ListItem: React.FC<ListItemProps> = ({ music }) => {
           display="flex"
           alignItems="center"
           color="#b3b3b3"
+          style={{
+            color: nowPlaying ? "#f81c55" : "#b3b3b3",
+          }}
         >
           <span>29,932,367</span>
         </k.div>
