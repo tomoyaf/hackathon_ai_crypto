@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { Music } from "@prisma/client";
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRecoilState } from "recoil";
 
 export const isPlayingAtom = atom<boolean>({
@@ -13,36 +13,47 @@ export const currentMusicAtom = atom<Music | null>({
   default: null,
 });
 
+export const audioAtom = atom<HTMLAudioElement | null>({
+  key: "audio",
+  default: null,
+});
+
 export const usePlayer = () => {
   const [isPlaying, setIsPlaying] = useRecoilState(isPlayingAtom);
   const [currentMusic, setCurrentMusic] = useRecoilState(currentMusicAtom);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    audioRef.current = new Audio();
-  }, []);
+  const [audio, setAudio] = useRecoilState(audioAtom);
 
   useEffect(() => {
     if (isPlaying) {
-      audioRef.current?.play();
+      audio?.play();
     } else {
-      audioRef.current?.pause();
+      audio?.pause();
     }
   }, [isPlaying]);
 
-  const playMusic = (music: Music) => {
-    if (audioRef.current) {
-      audioRef.current.src = music.url;
-      audioRef.current.play();
+  const playMusic = async (music: Music) => {
+    if (audio) {
+      audio.pause();
+      audio.onpause = () => {
+        const newAudio = new Audio(music.url);
+        newAudio.play();
+        setAudio(newAudio);
+        setCurrentMusic(music);
+        setIsPlaying(true);
+      };
+    } else {
+      const newAudio = new Audio(music.url);
+      newAudio.play();
+      setAudio(newAudio);
       setCurrentMusic(music);
       setIsPlaying(true);
     }
   };
 
   const stopMusic = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
       setCurrentMusic(null);
       setIsPlaying(false);
     }
@@ -73,6 +84,6 @@ export const usePlayer = () => {
     stopMusic,
     isMusicPlaying,
     handlePlayButtonClick,
-    audioRef,
+    audioRef: { current: audio },
   };
 };
