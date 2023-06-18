@@ -85,14 +85,10 @@ export default function PostPage() {
       { value: contractUtils.ADD_ITEM_PRICE }
     );
 
-    console.log("start transaction");
     const receipt = await tx.wait();
-    console.log(receipt);
     const voiceId = contractUtils.extractVoiceIdFromTxResult(receipt);
 
     if (!voiceId) throw new Error("コントラクターへの登録に失敗しました");
-
-    console.log("voiceId", voiceId);
 
     setFormState((s) => ({
       ...s,
