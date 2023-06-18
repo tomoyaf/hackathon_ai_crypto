@@ -78,11 +78,14 @@ export default function PostPage() {
       throw new Error("コントラクターへの登録に失敗しました");
     })();
 
+    // 現在の価格を取得
+    const addItemPrice = await _contract.addItemPrice();
+
     const tx = await _contract.requestAddMintableItem(
       utils.parseEther(formState.price.toString()),
       formState.maxSupply,
       formState.royaltyRate * 100,
-      { value: contractUtils.ADD_ITEM_PRICE }
+      { value: addItemPrice }
     );
 
     const receipt = await tx.wait();
