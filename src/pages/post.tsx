@@ -1,7 +1,7 @@
 import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
-import { useMetaMask } from "@/hooks/useContract";
+import { useMetaMask, useContract } from "@/hooks/useContract";
 import * as contractUtils from "@/utils/contractFrontend";
 import React from "react";
 import { toast } from "react-hot-toast";
@@ -14,9 +14,9 @@ import {
 import Link from "next/link";
 
 export default function PostPage() {
-  const { provider } = useMetaMask();
-  const [contract, setContract] =
-    React.useState<contractUtils.VoiceTokenType | null>(null);
+  const { provider, accounts, connectToMetaMask } = useMetaMask();
+  const { contract } = useContract(provider, accounts);
+  connectToMetaMask();
   const [formState, setFormState] = React.useState<{
     title: string;
     description: string;
@@ -71,21 +71,12 @@ export default function PostPage() {
 
   // コントラクターへの登録
   const registerToContract = async () => {
-    const _contract = (() => {
-      if (contract) return contract;
-      if (provider) {
-        const _contract = contractUtils.connectContract(provider);
-        setContract(_contract);
-        return _contract;
-      }
-
-      throw new Error("コントラクターへの登録に失敗しました");
-    })();
+    if (!contract) throw new Error("コントラクターが見つかりません");
 
     // 現在の価格を取得
-    const addItemPrice = await _contract.addItemPrice();
+    const addItemPrice = await contract.addItemPrice();
 
-    const tx = await _contract.requestAddMintableItem(
+    const tx = await contract.requestAddMintableItem(
       utils.parseEther(formState.price.toString()),
       formState.maxSupply,
       formState.royaltyRate * 100,
