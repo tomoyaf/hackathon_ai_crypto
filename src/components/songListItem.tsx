@@ -39,7 +39,7 @@ export const SongListItem: React.FC<{ music: Music }> = ({ music }) => {
             aria-hidden="false"
             draggable="false"
             loading="eager"
-            src={music.url}
+            src={music.thumbnailUrl}
             alt=""
             width="40px"
             height="40px"

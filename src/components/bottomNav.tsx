@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { css, k, styled } from "@kuma-ui/core";
+import Image from "next/image";
 
 export type BottomNavProps = {};
 
