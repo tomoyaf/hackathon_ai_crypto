@@ -160,13 +160,13 @@ export default function IndexPage() {
           </k.div>
         )}
 
-        {tabs.findIndex((tab) => tab.label === "投稿曲") === selectedTab && (
+        {tabs.findIndex((tab) => tab.label === "声モデル") === selectedTab && (
           <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
-            {(myInfo?.originalMusics.length ?? 0) === 0 ? (
+            {(myInfo?.voiceModels.length ?? 0) === 0 ? (
               <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
-                <k.p>まだ曲を投稿していないようです。</k.p>
+                <k.p>まだ声モデルを投稿していないようです。</k.p>
                 <k.p>
-                  曲を投稿して、世界中のクリエイターの声で無限の可能性を解放してみましょう！
+                  声をNFTとして投稿することで、世界中のクリエイターにあなたの声を解放してみましょう！
                 </k.p>
                 <k.div
                   borderStyle="solid"
@@ -177,22 +177,19 @@ export default function IndexPage() {
                   p="4px 24px"
                   m="20px 0 0"
                 >
-                  <Link
-                    href="/originalMusics/post"
-                    style={{ display: "flex", gap: "12px" }}
-                  >
-                    曲を投稿する
+                  <Link href="/post" style={{ display: "flex", gap: "12px" }}>
+                    声モデルを投稿する
                     <ArrowRightIcon width="24px" />
                   </Link>
                 </k.div>
               </k.div>
             ) : (
-              myInfo?.originalMusics.map((originalMusic) => (
+              myInfo?.voiceModels.map((voiceModel) => (
                 <Card
-                  href={`/originalMusics/${originalMusic.id}`}
-                  imageUrl={originalMusic.thumbnailUrl}
-                  title={originalMusic.title}
-                  description={originalMusic.description}
+                  href={`/voices/${voiceModel.id}`}
+                  imageUrl={voiceModel.thumbnailUrl}
+                  title={voiceModel.title}
+                  description={voiceModel.description}
                 />
               ))
             )}
