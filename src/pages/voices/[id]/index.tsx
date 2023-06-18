@@ -1,4 +1,4 @@
-import { Layout, SongItem } from "@/components";
+import { Layout, SongItem, SongListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
 import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
@@ -65,6 +65,11 @@ export default function IndexPage({ initialData }: ServerProps) {
           </k.div>
         </k.div>
       </Upper>
+      <k.div mt="50px"></k.div>
+
+      {data.musics.map((m, i) => {
+        return <SongListItem music={m} key={m.id} />;
+      })}
     </k.div>
   );
 }
