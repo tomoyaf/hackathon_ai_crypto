@@ -10,6 +10,7 @@ import {
   User,
   VoiceModel,
 } from "@prisma/client";
+import Link from "next/link";
 
 export default function IndexPage() {
   const { status, data: session } = useSession();
@@ -50,6 +51,7 @@ export default function IndexPage() {
           maxWidth="1200px"
           m="0 auto"
           gap="24px"
+          flexWrap="wrap"
           style={{
             alignSelf: "flex-end",
           }}
@@ -72,9 +74,46 @@ export default function IndexPage() {
         </k.div>
       </Upper>
 
-      <k.div>
-        <k.h3>声モデル</k.h3>
-        <k.div>{}</k.div>
+      <k.div
+        width="1200px"
+        maxWidth="100%"
+        display="flex"
+        flexDir="column"
+        m="36px auto 120px"
+        p="0 24px"
+        gap="24px"
+      >
+        <k.h1 color="white" fontSize="2rem" fontWeight="900">
+          声モデル
+        </k.h1>
+        <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
+          {myInfo?.voiceModels.map((voiceModel) => (
+            <Link href={`/voices/${voiceModel.id}`}>
+              <k.div
+                width="250px"
+                height="300px"
+                overflow="hidden"
+                borderRadius="4px"
+                display="flex"
+                flexDir="column"
+                bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
+              >
+                <k.img
+                  src={voiceModel.thumbnailUrl}
+                  width="250px"
+                  height="200px"
+                  style={{ objectFit: "cover" }}
+                />
+                <k.div m="12px 0 0" p="0 12px">
+                  {voiceModel.title}
+                </k.div>
+                <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
+                  {voiceModel.description}
+                </k.div>
+              </k.div>
+            </Link>
+          ))}
+        </k.div>
       </k.div>
 
       <k.div>
