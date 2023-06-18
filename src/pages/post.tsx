@@ -120,7 +120,9 @@ export default function PostPage() {
     );
     const savedVoiceModel = (await res.json())?.savedVoiceModel;
 
-    router.push(`/voices/${savedVoiceModel.id}`);
+    if (savedVoiceModel?.id != null) {
+      router.push(`/voices/${savedVoiceModel.id}`);
+    }
   };
 
   return (
