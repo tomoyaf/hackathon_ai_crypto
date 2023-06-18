@@ -13,7 +13,10 @@ import {
   VoiceModel,
 } from "@prisma/client";
 import Link from "next/link";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import { Card } from "@/components/card";
 import { useContract, useMetaMask } from "@/hooks/useContract";
 
@@ -86,6 +89,20 @@ export default function IndexPage() {
             <k.h1 fontSize="3rem" color="white" fontWeight={900}>
               {session?.user?.name}
             </k.h1>
+          </k.div>
+          <k.div position="absolute" right="24px" bottom="16px">
+            <k.a
+              href="https://forms.gle/qCef4L3zN1fWUvPMA"
+              target="_blank"
+              rel="noopener noreferrer"
+              fontSize="0.85rem"
+              display="flex"
+              gap="4px"
+              color="#35d0ac"
+            >
+              削除依頼
+              <ArrowTopRightOnSquareIcon width="15px" />
+            </k.a>
           </k.div>
         </k.div>
       </Upper>

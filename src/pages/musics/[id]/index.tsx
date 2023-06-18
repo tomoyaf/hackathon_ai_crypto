@@ -1,26 +1,30 @@
-import { Layout, SongListItem } from "@/components";
+import { Layout, ListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
 import React from "react";
-import { InferGetServerSidePropsType } from "next";
 import useSWR from "swr";
 import { useRouter } from "next/router";
-import { VoiceModel, Music } from "@prisma/client";
+import { Music, VoiceModel } from "@prisma/client";
 
-type VoiceModelWithMusics = VoiceModel & {
-  musics: Music[];
-};
-type ServerProps = InferGetServerSidePropsType<typeof getServerSideProps>;
-
-export default function IndexPage({ initialData }: ServerProps) {
+export default function IndexPage() {
   const router = useRouter();
   const { id } = router.query;
-  const { data = initialData } = useSWR<VoiceModelWithMusics>(
-    `/api/musics/${id}`,
+  const { data } = useSWR<Music & { isLiked: boolean; voiceModel: VoiceModel }>(
+    id == null ? null : `/api/musics/${id}`,
     (url: string) => fetch(url).then((res) => res.json())
   );
 
+  const updateEvaluation = (musicId: string) => (evaluation: number) => {
+    fetch(`/api/musics/${musicId}/evaluation`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ evaluation }),
+    });
+  };
+
   return (
-    <k.div className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll flex-wrap">
+    <k.div display="flex" flexDir="column">
       <Upper>
         <UpperContent className={css({ bgColor: "#32304d" })} />
         <UpperContent
@@ -36,7 +40,6 @@ export default function IndexPage({ initialData }: ServerProps) {
           zIndex="1"
           flexDir="row"
           maxWidth="1200px"
-          flexWrap="wrap"
           m="0 auto"
           gap="24px"
           style={{
@@ -49,29 +52,26 @@ export default function IndexPage({ initialData }: ServerProps) {
               width="192px"
               boxShadow="0 4px 60px rgba(0,0,0,.5)"
               borderRadius="50%"
-              src={data.thumbnailUrl}
-              alt={data.title}
+              src={data?.thumbnailUrl}
+              alt={data?.title}
             />
           </k.div>
-          <k.div
-            display="flex"
-            justify="center"
-            flexDir="column"
-            zIndex="1"
-            width="800px"
-          >
+          <k.div display="flex" justify="center" flexDir="column" zIndex="1">
             <k.h1 fontSize="3rem" color="white" fontWeight={900}>
-              {data.title}
+              {data?.title}
             </k.h1>
-            <k.div color="#9f9f9f">{data.description}</k.div>
+            <k.div color="#9f9f9f">{data?.description}</k.div>
           </k.div>
         </k.div>
       </Upper>
       <k.div mt="50px"></k.div>
 
-      {/* {data.musics.map((m, i) => {
-        return <SongListItem music={m} key={m.id} />;
-      })} */}
+      {data && (
+        <ListItem
+          music={data}
+          updateEvaluation={updateEvaluation(id as string)}
+        />
+      )}
     </k.div>
   );
 }
@@ -98,12 +98,3 @@ const UpperContent = styled("div")`
   top: 0;
   width: 100%;
 `;
-
-export async function getServerSideProps({ params }: any) {
-  const res = await fetch(`http://localhost:3009/api/voiceModels/${params.id}`);
-  const initialData: VoiceModelWithMusics = await res.json();
-
-  return {
-    props: { initialData },
-  };
-}
