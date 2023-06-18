@@ -25,7 +25,7 @@ type VoiceTokenType = Omit<VoiceToken, keyof ethers.BaseContract> &
   ethers.Contract;
 export async function connectContract() {
   const provider = new ethers.providers.JsonRpcProvider(
-    process.env.CHAIN_RPC_URL || ""
+    process.env.NEXT_PUBLIC_CHAIN_RPC_URL || ""
   );
 
   const ownerWallet = new ethers.Wallet(
@@ -34,7 +34,7 @@ export async function connectContract() {
   );
 
   const contract = new ethers.Contract(
-    process.env.CONTRACT_ADDRESS || "",
+    process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "",
     compiledInfo.abi,
     ownerWallet
   ) as VoiceTokenType;

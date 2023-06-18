@@ -14,8 +14,8 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     CountersUpgradeable.Counter private _tokenIdCounter;
     CountersUpgradeable.Counter private _voiceIdCounter;
 
-    uint256 private addItemPrice;
-    uint256 private mintCommissionRate;
+    uint256 public addItemPrice;
+    uint256 public mintCommissionRate;
 
     struct MintableItem {
         address royaltyReceiver;
@@ -48,10 +48,6 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
 
         addItemPrice = 0.5 ether; // 0.5 matic
         mintCommissionRate = 100; // 1%
-    }
-
-    function getCurrentSetting() public view onlyOwner returns (uint256, uint256) {
-        return (addItemPrice, mintCommissionRate);
     }
 
     function setSetting(uint256 newAddItemPrice, uint256 newMintCommissionRate) public onlyOwner {
