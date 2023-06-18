@@ -55,6 +55,7 @@ model User {
   originalMusics OriginalMusic[]
   reports Report[]
   musicEvaluations MusicEvaluation[]
+  userVoiceModelPurchases UserVoiceModelPurchase[]
   createdAt DateTime @default(now())
 }
 
@@ -64,6 +65,19 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model UserVoiceModelPurchase {
+  id      String    @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voiceModelId String
+  voiceModel VoiceModel @relation(fields: [voiceModelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([voiceModelId])
+  @@unique([voiceModelId])
 }
 
 model VoiceModel {
@@ -76,6 +90,7 @@ model VoiceModel {
   description String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   musics Music[]
+  userVoiceModelPurchase UserVoiceModelPurchase?
   createdAt DateTime @default(now())
 
   @@index([userId])

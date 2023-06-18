@@ -9,11 +9,13 @@ import {
   MusicEvaluation,
   OriginalMusic,
   User,
+  UserVoiceModelPurchase,
   VoiceModel,
 } from "@prisma/client";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Card } from "@/components/card";
+import { useContract, useMetaMask } from "@/hooks/useContract";
 
 export default function IndexPage() {
   const { status, data: session } = useSession();
@@ -25,6 +27,9 @@ export default function IndexPage() {
 
   const { data: myInfo } = useSWR<
     | (User & {
+        userVoiceModelPurchases: (UserVoiceModelPurchase & {
+          voiceModel: VoiceModel;
+        })[];
         voiceModels: VoiceModel[];
         originalMusics: OriginalMusic[];
         musicEvaluations: (MusicEvaluation & { music: Music })[];
@@ -34,6 +39,7 @@ export default function IndexPage() {
 
   const [selectedTab, setSelectedTab] = React.useState(0);
   const tabs = [
+    { label: "NFT" },
     { label: "声モデル" },
     { label: "投稿曲" },
     { label: "高評価した曲" },
@@ -118,13 +124,13 @@ export default function IndexPage() {
           ))}
         </k.div>
 
-        {tabs.findIndex((tab) => tab.label === "声モデル") === selectedTab && (
+        {tabs.findIndex((tab) => tab.label === "NFT") === selectedTab && (
           <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
-            {(myInfo?.voiceModels.length ?? 0) === 0 ? (
+            {(myInfo?.userVoiceModelPurchases.length ?? 0) === 0 ? (
               <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
-                <k.p>まだ声モデルを投稿していないようです。</k.p>
+                <k.p>まだ声モデルを購入していないようです。</k.p>
                 <k.p>
-                  声をNFTとして投稿することで、世界中のクリエイターにあなたの声を解放してみましょう！
+                  声モデルをNFTとして購入することで、その声を自由に使用できるようになります！
                 </k.p>
                 <k.div
                   borderStyle="solid"
@@ -135,19 +141,58 @@ export default function IndexPage() {
                   p="4px 24px"
                   m="20px 0 0"
                 >
-                  <Link href="/post" style={{ display: "flex", gap: "12px" }}>
-                    声モデルを投稿する
+                  <Link href="/voices" style={{ display: "flex", gap: "12px" }}>
+                    声モデルを購入する
                     <ArrowRightIcon width="24px" />
                   </Link>
                 </k.div>
               </k.div>
             ) : (
-              myInfo?.voiceModels.map((voiceModel) => (
+              myInfo?.userVoiceModelPurchases.map((userVoiceModelPurchase) => (
                 <Card
-                  href={`/voices/${voiceModel.id}`}
-                  imageUrl={voiceModel.thumbnailUrl}
-                  title={voiceModel.title}
-                  description={voiceModel.description}
+                  href={`/voices/${userVoiceModelPurchase.voiceModel.id}/nft`}
+                  imageUrl={userVoiceModelPurchase.voiceModel.thumbnailUrl}
+                  title={userVoiceModelPurchase.voiceModel.title}
+                  description={userVoiceModelPurchase.voiceModel.description}
+                />
+              ))
+            )}
+          </k.div>
+        )}
+
+        {tabs.findIndex((tab) => tab.label === "投稿曲") === selectedTab && (
+          <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
+            {(myInfo?.originalMusics.length ?? 0) === 0 ? (
+              <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
+                <k.p>まだ曲を投稿していないようです。</k.p>
+                <k.p>
+                  曲を投稿して、世界中のクリエイターの声で無限の可能性を解放してみましょう！
+                </k.p>
+                <k.div
+                  borderStyle="solid"
+                  borderWidth="1px"
+                  borderColor="#bbb"
+                  width="fit-content"
+                  borderRadius="4px"
+                  p="4px 24px"
+                  m="20px 0 0"
+                >
+                  <Link
+                    href="/originalMusics/post"
+                    style={{ display: "flex", gap: "12px" }}
+                  >
+                    曲を投稿する
+                    <ArrowRightIcon width="24px" />
+                  </Link>
+                </k.div>
+              </k.div>
+            ) : (
+              myInfo?.originalMusics.map((originalMusic) => (
+                <Card
+                  href={`/originalMusics/${originalMusic.id}`}
+                  imageUrl={originalMusic.thumbnailUrl}
+                  title={originalMusic.title}
+                  description={originalMusic.description}
                 />
               ))
             )}

@@ -23,6 +23,11 @@ export default async function handler(
         email: session.user.email,
       },
       include: {
+        userVoiceModelPurchases: {
+          include: {
+            voiceModel: true,
+          },
+        },
         voiceModels: true,
         originalMusics: true,
         musicEvaluations: {
