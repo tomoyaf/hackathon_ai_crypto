@@ -21,7 +21,6 @@ export default function PostPage() {
     price: number;
     royaltyRate: number;
     maxSupply: number;
-    voiceId?: number;
   }>({
     title: "",
     description: "",
@@ -91,10 +90,17 @@ export default function PostPage() {
 
     if (!voiceId) throw new Error("コントラクターへの登録に失敗しました");
 
-    setFormState((s) => ({
-      ...s,
-      voiceId,
-    }));
+    return voiceId;
+  };
+
+  const errorMessageHandler = (e: any) => {
+    console.error(e);
+    switch (e.code) {
+      case -32603:
+        return "登録に必要な残高が足りません";
+      default:
+        return "アップロードに失敗しました";
+    }
   };
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
@@ -102,20 +108,20 @@ export default function PostPage() {
 
     const res = await toast.promise(
       (async () => {
-        await registerToContract();
+        const voiceId = await registerToContract();
 
         return await fetch("/api/voiceModels", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formState),
+          body: JSON.stringify({ ...formState, voiceId }),
         });
       })(),
       {
         loading: "アップロード中です",
         success: "アップロードが完了しました",
-        error: "アップロードに失敗しました",
+        error: (err) => errorMessageHandler(err),
       }
     );
     const savedVoiceModel = (await res.json())?.savedVoiceModel;
