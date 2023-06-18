@@ -30,6 +30,13 @@ export default function IndexPage() {
     | null
   >("/api/users/me", (url: string) => fetch(url).then((res) => res.json()));
 
+  const [selectedTab, setSelectedTab] = React.useState(0);
+  const tabs = [
+    { label: "声モデル" },
+    { label: "投稿曲" },
+    { label: "高評価した曲" },
+  ];
+
   return (
     <k.div
       className="snap-y snap-mandatory hidden-scrollbar overflow-y-scroll"
@@ -82,67 +89,139 @@ export default function IndexPage() {
         flexDir="column"
         m="36px auto 120px"
         p="0 24px"
-        gap="24px"
+        gap="36px"
       >
-        <k.h1 color="white" fontSize="2rem" fontWeight="900">
-          声モデル
-        </k.h1>
-        <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
-          {(myInfo?.voiceModels.length ?? 0) === 0 ? (
-            <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
-              <k.p>まだ声モデルを投稿していないようです。</k.p>
-              <k.p>
-                声をNFTとして投稿することで、世界中のクリエイターにあなたの声を解放してみましょう！
-              </k.p>
-              <k.div
-                borderStyle="solid"
-                borderWidth="1px"
-                borderColor="#bbb"
-                width="fit-content"
-                borderRadius="4px"
-                p="4px 24px"
-                m="20px 0 0"
-              >
-                <Link href="/post" style={{ display: "flex", gap: "12px" }}>
-                  声モデルを投稿する
-                  <ArrowRightIcon width="24px" />
-                </Link>
-              </k.div>
-            </k.div>
-          ) : (
-            myInfo?.voiceModels.map((voiceModel) => (
-              <Link href={`/voices/${voiceModel.id}`}>
-                <k.div
-                  width="250px"
-                  height="300px"
-                  overflow="hidden"
-                  borderRadius="4px"
-                  display="flex"
-                  flexDir="column"
-                  bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
-                >
-                  <k.img
-                    src={voiceModel.thumbnailUrl}
-                    width="250px"
-                    height="200px"
-                    style={{ objectFit: "cover" }}
-                  />
-                  <k.div m="12px 0 0" p="0 12px">
-                    {voiceModel.title}
-                  </k.div>
-                  <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
-                    {voiceModel.description}
-                  </k.div>
-                </k.div>
-              </Link>
-            ))
-          )}
+        <k.div
+          width="100%"
+          display="flex"
+          flexWrap="wrap"
+          gap="28px"
+          alignItems="flex-end"
+        >
+          {tabs.map((tab, index) => (
+            <k.button
+              onClick={() => setSelectedTab(index)}
+              fontSize="1.5rem"
+              fontWeight="900"
+              transition="color ease 300ms"
+              style={{
+                textUnderlineOffset: "6px",
+                color: index === selectedTab ? "#f81c55" : "white",
+                textDecoration: index === selectedTab ? "underline" : "none",
+              }}
+            >
+              {tab.label}
+            </k.button>
+          ))}
         </k.div>
-      </k.div>
 
-      <k.div>
-        <k.h3>NFT</k.h3>
-        <k.div>{}</k.div>
+        {tabs.findIndex((tab) => tab.label === "声モデル") === selectedTab && (
+          <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
+            {(myInfo?.voiceModels.length ?? 0) === 0 ? (
+              <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
+                <k.p>まだ声モデルを投稿していないようです。</k.p>
+                <k.p>
+                  声をNFTとして投稿することで、世界中のクリエイターにあなたの声を解放してみましょう！
+                </k.p>
+                <k.div
+                  borderStyle="solid"
+                  borderWidth="1px"
+                  borderColor="#bbb"
+                  width="fit-content"
+                  borderRadius="4px"
+                  p="4px 24px"
+                  m="20px 0 0"
+                >
+                  <Link href="/post" style={{ display: "flex", gap: "12px" }}>
+                    声モデルを投稿する
+                    <ArrowRightIcon width="24px" />
+                  </Link>
+                </k.div>
+              </k.div>
+            ) : (
+              myInfo?.voiceModels.map((voiceModel) => (
+                <Link href={`/voices/${voiceModel.id}`}>
+                  <k.div
+                    width="250px"
+                    height="300px"
+                    overflow="hidden"
+                    borderRadius="4px"
+                    display="flex"
+                    flexDir="column"
+                    bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
+                  >
+                    <k.img
+                      src={voiceModel.thumbnailUrl}
+                      width="250px"
+                      height="200px"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <k.div m="12px 0 0" p="0 12px">
+                      {voiceModel.title}
+                    </k.div>
+                    <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
+                      {voiceModel.description}
+                    </k.div>
+                  </k.div>
+                </Link>
+              ))
+            )}
+          </k.div>
+        )}
+
+        {tabs.findIndex((tab) => tab.label === "投稿曲") === selectedTab && (
+          <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
+            {(myInfo?.originalMusics.length ?? 0) === 0 ? (
+              <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
+                <k.p>まだ声モデルを投稿していないようです。</k.p>
+                <k.p>
+                  声をNFTとして投稿することで、世界中のクリエイターにあなたの声を解放してみましょう！
+                </k.p>
+                <k.div
+                  borderStyle="solid"
+                  borderWidth="1px"
+                  borderColor="#bbb"
+                  width="fit-content"
+                  borderRadius="4px"
+                  p="4px 24px"
+                  m="20px 0 0"
+                >
+                  <Link href="/post" style={{ display: "flex", gap: "12px" }}>
+                    声モデルを投稿する
+                    <ArrowRightIcon width="24px" />
+                  </Link>
+                </k.div>
+              </k.div>
+            ) : (
+              myInfo?.originalMusics.map((originalMusic) => (
+                <Link href={`/originalMusics/${originalMusic.id}`}>
+                  <k.div
+                    width="250px"
+                    height="300px"
+                    overflow="hidden"
+                    borderRadius="4px"
+                    display="flex"
+                    flexDir="column"
+                    bg="linear-gradient(175deg, rgb(51 85 102) 0%, rgb(3 14 36) 100%)"
+                  >
+                    <k.img
+                      src={originalMusic.url}
+                      width="250px"
+                      height="200px"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <k.div m="12px 0 0" p="0 12px">
+                      {originalMusic.title}
+                    </k.div>
+                    <k.div color="#bbb" p="0 12px" fontSize="0.85rem">
+                      {originalMusic.description}
+                    </k.div>
+                  </k.div>
+                </Link>
+              ))
+            )}
+          </k.div>
+        )}
       </k.div>
     </k.div>
   );
