@@ -65,9 +65,9 @@ export default function IndexPage({ initialData }: ServerProps) {
       </Upper>
       <k.div mt="50px"></k.div>
 
-      {data.musics.map((m, i) => {
+      {/* {data.musics.map((m, i) => {
         return <SongListItem music={m} key={m.id} />;
-      })}
+      })} */}
     </k.div>
   );
 }
