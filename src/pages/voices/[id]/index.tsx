@@ -148,7 +148,9 @@ export default function IndexPage() {
               flexGrow="1"
               display="flex"
               justify="flex-end"
-              alignItems="center"
+              alignItems="flex-end"
+              gap="16px"
+              flexDir="column"
             >
               <k.button
                 boxShadow="0 2px 18px rgb(190 22 72)"
@@ -160,6 +162,7 @@ export default function IndexPage() {
                 height="fit-content"
                 width="fit-content"
                 p="24px 40px"
+                m="0 0 8px"
                 borderRadius="8px"
                 fontWeight="900"
                 transition="opacity ease 220ms"
@@ -172,6 +175,42 @@ export default function IndexPage() {
               >
                 NFT購入
               </k.button>
+
+              <k.div
+                display="flex"
+                fontSize="0.85rem"
+                color="#bbb"
+                lineHeight="1.5rem"
+                textAlign="right"
+              >
+                声を変換できるRVCという機械学習モデルです。
+                <br />
+                どのような声か確認し、気に入ったら購入してみましょう！
+              </k.div>
+
+              <k.div display="flex" fontSize="0.85rem">
+                <k.a
+                  href="https://tomoyaf.notion.site/f3293a74f8c04258b77e31aebbb6b5cc?pvs=4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  display="flex"
+                  gap="4px"
+                  color="#35d0ac"
+                >
+                  利用規約
+                </k.a>
+                ,
+                <k.a
+                  href="https://tomoyaf.notion.site/b1a2a24573414bb19693b33c2806e3c7?pvs=4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  display="flex"
+                  gap="4px"
+                  color="#35d0ac"
+                >
+                  プライバシーポリシー
+                </k.a>
+              </k.div>
             </k.div>
           )}
         </k.div>
