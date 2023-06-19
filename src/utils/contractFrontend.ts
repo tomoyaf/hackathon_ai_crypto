@@ -41,6 +41,10 @@ export function connectContract(
   return contract as VoiceTokenType;
 }
 
+export function connectReadOnlyContract() {
+  return connectContract(createReadOnlyProvider());
+}
+
 export function changeProvider(
   contract: VoiceTokenType,
   provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
@@ -61,4 +65,19 @@ export function extractVoiceIdFromTxResult(
 
   // BigNumberをnumberに変換する
   return voiceId ? +voiceId.toString() : undefined;
+}
+
+export function extractMintedArgsFromTxResult(receipt: ethers.ContractReceipt) {
+  const [tokenId, voiceId] =
+    receipt.events?.find((e) => e.event === "SuccessMinted")?.args ?? [];
+
+  // BigNumberをnumberに変換する
+  return {
+    tokenId: tokenId ? +tokenId.toString() : undefined,
+    voiceId: voiceId ? +voiceId.toString() : undefined,
+  };
+}
+
+export function createPolygonScanUrl(txHash: string) {
+  return `https://mumbai.polygonscan.com/tx/${txHash}`;
 }

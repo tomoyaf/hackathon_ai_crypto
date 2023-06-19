@@ -1,7 +1,7 @@
 import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
 import { useFeedItems } from "@/hooks/useFeedItems";
-import { useMetaMask, useContract } from "@/hooks/useContract";
+import { useMetaMask } from "@/hooks/useContract";
 import * as contractUtils from "@/utils/contractFrontend";
 import React from "react";
 import { toast } from "react-hot-toast";
@@ -14,9 +14,7 @@ import {
 import Link from "next/link";
 
 export default function PostPage() {
-  const { provider, accounts, connectToMetaMask } = useMetaMask();
-  const { contract } = useContract(provider, accounts);
-  connectToMetaMask();
+  const { connectToMetaMask } = useMetaMask();
   const [formState, setFormState] = React.useState<{
     title: string;
     description: string;
@@ -74,6 +72,7 @@ export default function PostPage() {
 
   // コントラクターへの登録
   const registerToContract = async () => {
+    const { contract } = await connectToMetaMask();
     if (!contract) throw new Error("コントラクターが見つかりません");
 
     // 現在の価格を取得
