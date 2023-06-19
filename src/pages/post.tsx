@@ -78,6 +78,7 @@ export default function PostPage() {
 
     // 現在の価格を取得
     const addItemPrice = await contract.addItemPrice();
+    console.log({ addItemPrice, contract });
 
     const tx = await contract.requestAddMintableItem(
       utils.parseEther(formState.price.toString()),
@@ -212,7 +213,7 @@ export default function PostPage() {
           />
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">転売還元率(%)</k.span>
+          <k.span fontSize="0.85rem">二次流通還元率(%)</k.span>
           <k.input
             type="number"
             p="4px 8px"
