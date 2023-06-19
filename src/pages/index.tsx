@@ -1,10 +1,9 @@
-import { useFeedItems } from "@/hooks/useFeedItems";
 import React from "react";
-import { signIn, useSession } from "next-auth/react";
 import { k } from "@kuma-ui/core";
-import { Header, BottomNav, Layout, ListItem } from "@/components";
+import { Header, Layout, ListItem } from "@/components";
 import useSWR from "swr";
 import { Music, VoiceModel } from "@prisma/client";
+import { IntroCard } from "@/components/introCard";
 
 export default function IndexPage() {
   const fetcher = (url: string) =>
@@ -29,14 +28,16 @@ export default function IndexPage() {
 
   return (
     <k.div>
-      <k.div mt="100px"></k.div>
+      <IntroCard />
+
+      <Header />
 
       <k.div
         display="flex"
         flexDir="column"
         alignItems="center"
         bg="linear-gradient(136deg, #0f1724, #05111c)"
-        p="36px 0"
+        p="36px 0 200px"
       >
         {data?.musics?.map((item, i) => {
           return (
@@ -52,4 +53,4 @@ export default function IndexPage() {
   );
 }
 
-IndexPage.getLayout = (page: any) => <Layout withHeader>{page}</Layout>;
+IndexPage.getLayout = (page: any) => <Layout>{page}</Layout>;

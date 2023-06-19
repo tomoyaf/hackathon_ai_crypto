@@ -6,6 +6,7 @@ import { useMetaMask } from "@/hooks/useContract";
 import useSWR from "swr";
 import { useRouter } from "next/router";
 import { VoiceModel, Music } from "@prisma/client";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 type VoiceModelWithMusics = VoiceModel & {
   musics: (Music & { isLiked: boolean; voiceModel: VoiceModel })[];
@@ -106,7 +107,13 @@ export default function IndexPage() {
             <k.div color="#9f9f9f">{data?.rule}</k.div>
           </k.div>
           {isOwner && (
-            <k.div flexGrow="1" display="flex" justify="flex-end">
+            <k.div
+              flexGrow="1"
+              display="flex"
+              alignItems="flex-end"
+              flexDir="column"
+              gap="24px"
+            >
               <k.a
                 href={data?.url}
                 boxShadow="0 2px 18px rgb(190 22 72)"
@@ -129,6 +136,19 @@ export default function IndexPage() {
                 download
               >
                 RVCモデルダウンロード
+              </k.a>
+
+              <k.a
+                href="https://forms.gle/gVfKAuZ6u8VjeXDs9"
+                target="_blank"
+                rel="noopener noreferrer"
+                fontSize="0.85rem"
+                display="flex"
+                gap="4px"
+                color="#35d0ac"
+              >
+                声変換代行サービス依頼フォーム
+                <ArrowTopRightOnSquareIcon width="15px" />
               </k.a>
             </k.div>
           )}

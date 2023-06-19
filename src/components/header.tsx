@@ -15,8 +15,6 @@ export const Header: React.FC<HeaderProps> = () => {
       width="100vw"
       display="flex"
       justify="center"
-      position="fixed"
-      top="8px"
       zIndex="30"
       bg="linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%)"
       style={{ backdropFilter: "blur(4px)" }}

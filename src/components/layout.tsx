@@ -4,11 +4,9 @@ import React from "react";
 
 export const Layout: React.FC<{
   children: React.ReactNode;
-  withHeader?: boolean;
-}> = ({ children, withHeader }) => {
+}> = ({ children }) => {
   return (
     <Wrapper>
-      {withHeader && <Header />}
       <k.main height="100vh">{children}</k.main>
       <BottomNav />
     </Wrapper>

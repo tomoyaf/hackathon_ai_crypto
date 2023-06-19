@@ -32,7 +32,7 @@ export default function PostPage() {
     rvcModelUrl: "",
     price: 100,
     royaltyRate: 5,
-    maxSupply: 100,
+    maxSupply: 3,
     rule: `・本モデルに伴ういかなる損害についても、当方は一切の責任を負いません。
 ・公序良俗に反した利用の禁止。`,
   });
@@ -209,7 +209,7 @@ export default function PostPage() {
           />
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">販売価格(Matic)</k.span>
+          <k.span fontSize="0.85rem">販売価格(MATIC)</k.span>
           <k.input
             type="number"
             p="4px 8px"
@@ -247,7 +247,7 @@ export default function PostPage() {
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
           <k.span fontSize="0.85rem">
-            流通量 (0で設定すると無制限になります)
+            販売個数(0で設定すると無制限になります)
           </k.span>
           <k.input
             type="number"

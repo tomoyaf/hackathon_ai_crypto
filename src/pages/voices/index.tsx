@@ -1,5 +1,5 @@
 import { k, styled } from "@kuma-ui/core";
-import { Layout, SongItem } from "@/components";
+import { Header, Layout, SongItem } from "@/components";
 import React from "react";
 import useSWR from "swr";
 import { VoiceModel } from "@prisma/client";
@@ -13,6 +13,8 @@ export default function VoiceIndexPage() {
 
   return (
     <k.div>
+      <Header />
+
       <k.div mt="100px"></k.div>
 
       <k.div
@@ -48,4 +50,4 @@ export default function VoiceIndexPage() {
   );
 }
 
-VoiceIndexPage.getLayout = (page: any) => <Layout withHeader>{page}</Layout>;
+VoiceIndexPage.getLayout = (page: any) => <Layout>{page}</Layout>;
