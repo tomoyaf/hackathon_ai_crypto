@@ -15,6 +15,7 @@ import Link from "next/link";
 
 export default function PostPage() {
   const { connectToMetaMask } = useMetaMask();
+  const readOnlyContract = contractUtils.connectReadOnlyContract();
   const [formState, setFormState] = React.useState<{
     title: string;
     description: string;
@@ -37,6 +38,15 @@ export default function PostPage() {
   });
 
   const router = useRouter();
+
+  // 登録料取得
+  const [addItemPrice, setAddItemPrice] = React.useState("");
+  React.useEffect(() => {
+    (async () => {
+      const price = await readOnlyContract.addItemPrice();
+      setAddItemPrice(utils.formatEther(price));
+    })();
+  }, []);
 
   const handleChangeThumbnail =
     (key: string, uploadedDir: string) =>
@@ -77,6 +87,12 @@ export default function PostPage() {
 
     // 現在の価格を取得
     const addItemPrice = await contract.addItemPrice();
+    const balance = await contract.signer.getBalance();
+    const estimatedGas = await contract.estimateGas.requestAddMintableItem();
+    if (balance.lt(estimatedGas.add(addItemPrice))) {
+      toast.error("残高が不足しております");
+      return;
+    }
 
     const tx = await contract.requestAddMintableItem(
       utils.parseEther(formState.price.toString()),
@@ -373,7 +389,7 @@ export default function PostPage() {
           }}
           p="8px 0"
         >
-          送信
+          登録{addItemPrice ? ` (${addItemPrice} MATIC)` : ""}
         </k.button>
       </k.form>
 

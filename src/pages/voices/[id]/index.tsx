@@ -61,11 +61,7 @@ export default function IndexPage() {
     try {
       const selfAddress = await metaMaskContract.signer.getAddress();
       const balance = await metaMaskContract.signer.getBalance();
-      const estimatedGas = await metaMaskContract.estimateGas.safeMint(
-        selfAddress,
-        data.voiceId,
-        { value: utils.parseEther(price) }
-      );
+      const estimatedGas = await metaMaskContract.estimateGas.safeMint();
       if (balance.lt(estimatedGas.add(utils.parseEther(price)))) {
         toast.error("残高が不足しております");
         return;
