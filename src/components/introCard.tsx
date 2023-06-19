@@ -38,7 +38,7 @@ export const IntroCard: React.FC<IntroCardProps> = (props) => {
 
           <k.div fontSize="0.85rem" lineHeight="2rem" mt="6px">
             あなたの声を最新のAIで学習し、誰の声でも簡単にあなたの声に変換することができます。
-            この変換AIをNFTにして、世界中のクリエイターに発信しましょう！
+            この声変換AIをNFTにして、世界中のクリエイターに発信しましょう！
           </k.div>
           <k.div fontSize="0.85rem" lineHeight="2rem">
             クリエイターは自分の好きな声を法律を守りながら利用することができます。
@@ -122,7 +122,7 @@ export const IntroCard: React.FC<IntroCardProps> = (props) => {
             あなたの声モデルNFTは売却時に利益を得るだけではなく、二次流通の取引でも一定料率で還元があります。
           </k.div>
           <k.div fontSize="0.85rem" lineHeight="2rem">
-            販売価格も二次流通還元率も自由に設定することができます。
+            そして、販売価格も二次流通還元率も自由に設定することができます。
           </k.div>
           <k.div
             fontSize="0.85rem"

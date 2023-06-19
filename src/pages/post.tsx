@@ -232,6 +232,9 @@ export default function PostPage() {
             }
             required
           />
+          <k.span fontSize="0.85rem" opacity="0.7">
+            1MATICは約85円（2023/06/19時点）
+          </k.span>
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
           <k.span fontSize="0.85rem">二次流通還元率(%)</k.span>
@@ -355,6 +358,8 @@ export default function PostPage() {
               p="4px 8px"
               borderRadius="4px"
               color="#2e3855"
+              fontSize="0.85rem"
+              minHeight="120px"
               value={formState.rule}
               onChange={(e) => {
                 setFormState((s) => ({
