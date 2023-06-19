@@ -28,7 +28,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
 
     mapping(uint256 => MintableItem) private _mintableItems;
     mapping(uint256 => uint256) private _voiceIds;
-    mapping(address => mapping(uint256 => uint256)) private _ownedVoiceIds;
+    mapping(address => mapping(uint256 => uint256)) private _owneredVoiceCounts;
     mapping(uint256 => uint256) private _soldItemCounts;
 
     event RoyaltiesSet(uint256 indexed tokenId, address indexed recipient, uint256 value);
@@ -132,7 +132,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         _safeMint(recipient, tokenId);
         _setTokenURI(tokenId, item.tokenURI);
         _voiceIds[tokenId] = voiceId;
-        _ownedVoiceIds[recipient][voiceId] = tokenId;
+        _owneredVoiceCounts[recipient][voiceId] += 1;
         _soldItemCounts[voiceId] += 1;
 
         emit RoyaltiesSet(tokenId, item.royaltyReceiver, item.royaltyRate);
@@ -145,9 +145,9 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         return (_soldItemCounts[voiceId], item.maxSupply, item.maxSupply == 0);
     }
 
-    function hasOwnedVoiceId(address ownerAddress, uint256 voiceId) public view returns (uint256) {
-        uint256 tokenId = _ownedVoiceIds[ownerAddress][voiceId];
-        return tokenId;
+    function ownedVoiceCount(address ownerAddress, uint256 voiceId) public view returns (uint256) {
+        uint256 _ownedVoiceCount = _owneredVoiceCounts[ownerAddress][voiceId];
+        return _ownedVoiceCount;
     }
 
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
@@ -170,6 +170,14 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         internal
         override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
     {
+        // mint時はスキップ
+        if (from != address(0)) {
+            // トークンの移動時に、所有しているボイスIDのカウントを更新する
+            uint256 voiceId = _voiceIds[tokenId];
+            _owneredVoiceCounts[from][voiceId] -= 1;
+            _owneredVoiceCounts[to][voiceId] += 1;
+        }
+        
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
@@ -178,7 +186,7 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
     {
         uint256 voiceId = _voiceIds[tokenId];
-        delete _ownedVoiceIds[ownerOf(tokenId)][voiceId];
+        _owneredVoiceCounts[ownerOf(tokenId)][voiceId] -= 1;
         delete _voiceIds[tokenId];
 
         super._burn(tokenId);

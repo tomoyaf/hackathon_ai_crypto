@@ -92,7 +92,9 @@ export default function PostPage() {
         utils.parseEther(formState.price.toString()),
         formState.maxSupply,
         formState.royaltyRate * 100,
-        { value: addItemPrice }
+        {
+          value: addItemPrice,
+        }
       );
 
     if (balance.lt(estimatedGas.add(addItemPrice)))
@@ -102,13 +104,16 @@ export default function PostPage() {
       utils.parseEther(formState.price.toString()),
       formState.maxSupply,
       formState.royaltyRate * 100,
-      { value: addItemPrice }
+      {
+        value: addItemPrice,
+      }
     );
 
     const receipt = await tx.wait();
     const voiceId = contractUtils.extractVoiceIdFromTxResult(receipt);
 
-    if (!voiceId) throw new Error("コントラクターへの登録に失敗しました");
+    if (voiceId == null)
+      throw new Error("コントラクターへの登録に失敗しました");
 
     return voiceId;
   };

@@ -3,7 +3,7 @@ import { Layout, ListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
 import { useMetaMask } from "@/hooks/useContract";
 import * as contractUtils from "@/utils/contractFrontend";
-import { utils, ContractReceipt } from "ethers";
+import { utils, ContractReceipt, BigNumber } from "ethers";
 import React from "react";
 import { InferGetServerSidePropsType } from "next";
 import useSWR from "swr";
@@ -21,62 +21,77 @@ export default function IndexPage() {
   const { connectToMetaMask } = useMetaMask();
   const { id } = router.query;
   const { data } = useSWR<VoiceModelWithMusics>(
-    `/api/voiceModels/${id}`,
+    () => (id ? `/api/voiceModels/${id}` : null),
     (url: string) => fetch(url).then((res) => res.json())
   );
 
   // 値段取得処理
-  const [isSoldOut, setIsSoldOut] = React.useState(false);
-  const [price, setPrice] = React.useState("");
+  const [isBuyable, setIsBuyable] = React.useState(false);
+  const [price, setPrice] = React.useState<BigNumber>();
+  const priceByMatic = React.useMemo(
+    () => (price ? utils.formatEther(price) : ""),
+    [price]
+  );
   React.useEffect(() => {
     (async () => {
       if (!data?.voiceId) return;
       const [currentSoldCount, maxSupply, isUnlimitedSupply] =
-        await readOnlyContract.getMintableCount(data?.voiceId);
+        await readOnlyContract.getMintableCount(data.voiceId);
 
       const isMintable = isUnlimitedSupply || currentSoldCount < maxSupply;
-      setIsSoldOut(isMintable);
+      setIsBuyable(isMintable);
 
       if (!isMintable) return;
-      const price = await readOnlyContract.getMintPrice(data?.voiceId);
-      setPrice(utils.formatEther(price));
+      const price = await readOnlyContract.getMintPrice(data.voiceId);
+      setPrice(price);
     })();
   }, [data?.voiceId]);
 
-  const [isBuyable, setIsBuyable] = React.useState(true);
-
   // 購入処理
+  const [owned, setOwned] = React.useState(false);
   const [mintedResult, setMintedResult] = React.useState<{
     receipt: ContractReceipt;
     tokenId?: number;
     voiceId?: number;
   }>();
   const mint = async () => {
-    if (!data?.voiceId || isSoldOut) return;
+    if (!data?.voiceId || !isBuyable || !price || owned) return;
     const { contract: metaMaskContract } = await connectToMetaMask();
     if (!metaMaskContract) {
       toast.error("ウォレットに接続できませんでした");
       return;
     }
 
-    toast.loading("購入処理中...");
+    const loadingId = toast.loading("購入処理中...");
     try {
       const selfAddress = await metaMaskContract.signer.getAddress();
+      const ownedCount = await metaMaskContract.ownedVoiceCount(
+        selfAddress,
+        data.voiceId
+      );
+      const _owned = ownedCount.toNumber() > 0;
+      setOwned(_owned);
+      if (_owned) {
+        toast.error("すでに購入済みです");
+        return;
+      }
+
       const balance = await metaMaskContract.signer.getBalance();
       const estimatedGas = await readOnlyContract.estimateGas.safeMint(
         selfAddress,
         data.voiceId,
         {
-          value: utils.parseEther(price),
+          value: price,
         }
       );
-      if (balance.lt(estimatedGas.add(utils.parseEther(price)))) {
+
+      if (balance.lt(estimatedGas.add(price))) {
         toast.error("残高が不足しております");
         return;
       }
 
       const tx = await metaMaskContract.safeMint(selfAddress, data.voiceId, {
-        value: utils.parseEther(price),
+        value: price,
       });
       const receipt = await tx.wait();
       const { tokenId } = contractUtils.extractMintedArgsFromTxResult(receipt);
@@ -84,11 +99,13 @@ export default function IndexPage() {
 
       // トランザクション結果
       console.log(contractUtils.createPolygonScanUrl(receipt.transactionHash));
-
+      setOwned(true);
       setMintedResult({ receipt, tokenId, voiceId: data.voiceId });
     } catch (error) {
       console.error(error);
       toast.error("購入に失敗しました");
+    } finally {
+      toast.dismiss(loadingId);
     }
   };
 
@@ -143,7 +160,7 @@ export default function IndexPage() {
             <k.div color="#9f9f9f">{data?.rule}</k.div>
           </k.div>
 
-          {isBuyable && (
+          {isBuyable && !owned && (
             <k.div
               flexGrow="1"
               display="flex"
@@ -212,6 +229,31 @@ export default function IndexPage() {
                 </k.a>
               </k.div>
             </k.div>
+          )}
+
+          {owned && (
+            <k.button
+              boxShadow="0 2px 18px rgb(190 22 72)"
+              borderWidth="2px"
+              borderStyle="solid"
+              borderColor="#c3164a"
+              color="#f22e6a"
+              display="flex"
+              height="fit-content"
+              width="fit-content"
+              p="24px 40px"
+              m="0 0 8px"
+              borderRadius="8px"
+              fontWeight="900"
+              transition="opacity ease 220ms"
+              bg="linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.98) 100%)"
+              fontSize="1.2rem"
+              _hover={{
+                opacity: 0.7,
+              }}
+            >
+              購入済み
+            </k.button>
           )}
         </k.div>
       </Upper>

@@ -1,5 +1,5 @@
 import {ethers, upgrades} from 'hardhat'
-const UPGRADE_ADDR = '0xe03CbF0FF677C7B4b0C555D564bf99eFef3B0F9e'
+const UPGRADE_ADDR = '0x1252f531109e5D2121b9F518E398495bd8Cea768'
 
 async function main() {
   const Token = await ethers.getContractFactory('VoiceToken')
