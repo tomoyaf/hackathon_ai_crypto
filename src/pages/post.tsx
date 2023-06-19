@@ -83,7 +83,6 @@ export default function PostPage() {
   // コントラクターへの登録
   const registerToContract = async () => {
     const { contract } = await connectToMetaMask();
-    if (!contract) throw new Error("コントラクターが見つかりません");
 
     // 現在の価格を取得
     const addItemPrice = await contract.addItemPrice();
@@ -114,43 +113,44 @@ export default function PostPage() {
     return voiceId;
   };
 
-  const errorMessageHandler = (e: any) => {
-    console.error(e);
-    switch (e?.code) {
-      case -32603:
-        return "登録に必要な残高が足りません";
-      default:
-        return "コントラクターへの登録に失敗しました";
-    }
-  };
-
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    const voiceId = await toast.promise(registerToContract(), {
-      loading: "コントラクターと通信中です",
-      success: "コントラクターへの登録が完了しました",
-      error: (err) => errorMessageHandler(err),
-    });
-
-    const res = await toast.promise(
-      fetch("/api/voiceModels", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const voiceId = await toast.promise(registerToContract(), {
+        loading: "コントラクターと通信中です",
+        success: "コントラクターへの登録が完了しました",
+        error: (e) => {
+          switch (e?.code) {
+            case -32603:
+              return "登録に必要な残高が足りません";
+            default:
+              return e?.message ?? "コントラクターへの登録に失敗しました";
+          }
         },
-        body: JSON.stringify({ ...formState, voiceId }),
-      }),
-      {
-        loading: "アップロード中です",
-        success: "アップロードが完了しました",
-        error: "アップロードに失敗しました",
-      }
-    );
-    const savedVoiceModel = (await res.json())?.savedVoiceModel;
+      });
 
-    if (savedVoiceModel?.id != null) {
-      router.push(`/voices/${savedVoiceModel.id}`);
+      const res = await toast.promise(
+        fetch("/api/voiceModels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...formState, voiceId }),
+        }),
+        {
+          loading: "アップロード中です",
+          success: "アップロードが完了しました",
+          error: "アップロードに失敗しました",
+        }
+      );
+      const savedVoiceModel = (await res.json())?.savedVoiceModel;
+
+      if (savedVoiceModel?.id != null) {
+        router.push(`/voices/${savedVoiceModel.id}`);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
