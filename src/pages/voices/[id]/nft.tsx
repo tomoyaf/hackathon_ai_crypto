@@ -2,13 +2,7 @@
 import React from "react";
 import { Layout, ListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
-import {
-  useReadOnlyProvider,
-  useContract,
-  useMetaMask,
-} from "@/hooks/useContract";
-import { utils } from "ethers";
-import { InferGetServerSidePropsType } from "next";
+import { useMetaMask } from "@/hooks/useContract";
 import useSWR from "swr";
 import { useRouter } from "next/router";
 import { VoiceModel, Music } from "@prisma/client";
@@ -19,9 +13,8 @@ type VoiceModelWithMusics = VoiceModel & {
 
 export default function IndexPage() {
   const router = useRouter();
-  const { provider, accounts, connectToMetaMask } = useMetaMask();
-  const { contract } = useContract(provider, accounts);
-  connectToMetaMask();
+  // const { provider, accounts, connectToMetaMask } = useMetaMask();
+  // connectToMetaMask();
   // metamask連携が出来ない場合は、read only providerを使う
   const { id } = router.query;
   const { data } = useSWR<VoiceModelWithMusics>(
@@ -31,35 +24,35 @@ export default function IndexPage() {
 
   const [isOwner, setIsOwner] = React.useState(true);
 
-  const [isSoldOut, setIsSoldOut] = React.useState(false);
-  const [price, setPrice] = React.useState("");
+  // const [isSoldOut, setIsSoldOut] = React.useState(false);
+  // const [price, setPrice] = React.useState("");
 
-  React.useEffect(() => {
-    (async () => {
-      console.log({ contract, data });
+  // React.useEffect(() => {
+  //   (async () => {
+  //     console.log({ contract, data });
 
-      if (!contract || !data?.voiceId) return;
-      const [currentSoldCount, maxSupply, isUnlimitedSupply] =
-        await contract.getMintableCount(data?.voiceId);
+  //     if (!contract || !data?.voiceId) return;
+  //     const [currentSoldCount, maxSupply, isUnlimitedSupply] =
+  //       await contract.getMintableCount(data?.voiceId);
 
-      console.log(currentSoldCount, maxSupply, isUnlimitedSupply);
+  //     console.log(currentSoldCount, maxSupply, isUnlimitedSupply);
 
-      const isMintable = isUnlimitedSupply || currentSoldCount < maxSupply;
-      setIsSoldOut(isMintable);
+  //     const isMintable = isUnlimitedSupply || currentSoldCount < maxSupply;
+  //     setIsSoldOut(isMintable);
 
-      if (accounts == null || accounts.length === 0 || data?.voiceId == null) {
-        console.log(JSON.stringify({ accounts, data }));
-        return;
-      }
+  //     if (accounts == null || accounts.length === 0 || data?.voiceId == null) {
+  //       console.log(JSON.stringify({ accounts, data }));
+  //       return;
+  //     }
 
-      const tokenId = await contract.hasOwnedVoiceId(
-        accounts[0],
-        data.voiceId + 100
-      );
+  //     const tokenId = await contract.hasOwnedVoiceId(
+  //       accounts[0],
+  //       data.voiceId + 100
+  //     );
 
-      console.log(JSON.stringify({ accounts, data, tokenId }));
-    })();
-  }, [contract, data?.voiceId]);
+  //     console.log(JSON.stringify({ accounts, data, tokenId }));
+  //   })();
+  // }, [contract, data?.voiceId]);
 
   const updateEvaluation = (musicId: string) => (evaluation: number) => {
     fetch(`/api/musics/${musicId}/evaluation`, {
@@ -87,9 +80,10 @@ export default function IndexPage() {
           width="100%"
           zIndex="1"
           flexDir="row"
-          maxWidth="1200px"
+          maxWidth="1000px"
           m="0 auto"
           gap="24px"
+          alignItems="center"
           style={{
             alignSelf: "flex-end",
           }}
@@ -112,14 +106,29 @@ export default function IndexPage() {
             <k.div color="#9f9f9f">{data?.rule}</k.div>
           </k.div>
           {isOwner && (
-            <k.button
-              boxShadow="0 2px 8px rgba(0, 0, 0, 0.3)"
-              display="flex"
-              height="fit-content"
-              width="fit-content"
-            >
-              RVCモデルダウンロード
-            </k.button>
+            <k.div flexGrow="1" display="flex" justify="flex-end">
+              <k.button
+                boxShadow="0 2px 18px rgb(190 22 72)"
+                borderWidth="2px"
+                borderStyle="solid"
+                borderColor="#c3164a"
+                color="#f22e6a"
+                display="flex"
+                height="fit-content"
+                width="fit-content"
+                p="24px 40px"
+                borderRadius="8px"
+                fontWeight="900"
+                transition="opacity ease 220ms"
+                bg="linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.98) 100%)"
+                fontSize="1.2rem"
+                _hover={{
+                  opacity: 0.7,
+                }}
+              >
+                RVCモデルダウンロード
+              </k.button>
+            </k.div>
           )}
         </k.div>
       </Upper>

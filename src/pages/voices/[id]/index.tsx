@@ -1,12 +1,14 @@
 "use client";
 import { Layout, ListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
-import { useReadOnlyProvider, useContract } from "@/hooks/useContract";
-import { utils } from "ethers";
+import { useMetaMask } from "@/hooks/useContract";
+import * as contractUtils from "@/utils/contractFrontend";
+import { utils, ContractReceipt } from "ethers";
 import React from "react";
 import { InferGetServerSidePropsType } from "next";
 import useSWR from "swr";
 import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
 import { VoiceModel, Music } from "@prisma/client";
 
 type VoiceModelWithMusics = VoiceModel & {
@@ -15,34 +17,72 @@ type VoiceModelWithMusics = VoiceModel & {
 
 export default function IndexPage() {
   const router = useRouter();
-  const { provider: readOnlyProvider } = useReadOnlyProvider();
-  // metamask連携が出来ない場合は、read only providerを使う
-  const { contract } = useContract(readOnlyProvider);
+  const readOnlyContract = contractUtils.connectReadOnlyContract();
+  const { connectToMetaMask } = useMetaMask();
   const { id } = router.query;
   const { data } = useSWR<VoiceModelWithMusics>(
     `/api/voiceModels/${id}`,
     (url: string) => fetch(url).then((res) => res.json())
   );
 
+  // 値段取得処理
   const [isSoldOut, setIsSoldOut] = React.useState(false);
   const [price, setPrice] = React.useState("");
   React.useEffect(() => {
     (async () => {
-      if (!contract || !data?.voiceId) return;
+      if (!data?.voiceId) return;
       const [currentSoldCount, maxSupply, isUnlimitedSupply] =
-        await contract.getMintableCount(data?.voiceId);
-
-      console.log(currentSoldCount, maxSupply, isUnlimitedSupply);
+        await readOnlyContract.getMintableCount(data?.voiceId);
 
       const isMintable = isUnlimitedSupply || currentSoldCount < maxSupply;
       setIsSoldOut(isMintable);
 
       if (!isMintable) return;
-      const price = await contract.getMintPrice(data?.voiceId);
-      console.log(utils.formatEther(price));
+      const price = await readOnlyContract.getMintPrice(data?.voiceId);
       setPrice(utils.formatEther(price));
     })();
-  }, [contract, data?.voiceId]);
+  }, [data?.voiceId]);
+
+  // 購入処理
+  const [mintedResult, setMintedResult] = React.useState<{
+    receipt: ContractReceipt;
+    tokenId?: number;
+    voiceId?: number;
+  }>();
+  const mint = async () => {
+    if (!data?.voiceId || isSoldOut) return;
+    const { contract: metaMaskContract } = await connectToMetaMask();
+    if (!metaMaskContract) {
+      toast.error("ウォレットに接続できませんでした");
+      return;
+    }
+
+    toast.loading("購入処理中...");
+    try {
+      const selfAddress = await metaMaskContract.signer.getAddress();
+      const balance = await metaMaskContract.signer.getBalance();
+      const estimatedGas = await metaMaskContract.estimateGas.safeMint();
+      if (balance.lt(estimatedGas.add(utils.parseEther(price)))) {
+        toast.error("残高が不足しております");
+        return;
+      }
+
+      const tx = await metaMaskContract.safeMint(selfAddress, data.voiceId, {
+        value: utils.parseEther(price),
+      });
+      const receipt = await tx.wait();
+      const { tokenId } = contractUtils.extractMintedArgsFromTxResult(receipt);
+      toast.success("購入しました");
+
+      // トランザクション結果
+      console.log(contractUtils.createPolygonScanUrl(receipt.transactionHash));
+
+      setMintedResult({ receipt, tokenId, voiceId: data.voiceId });
+    } catch (error) {
+      console.error(error);
+      toast.error("購入に失敗しました");
+    }
+  };
 
   const updateEvaluation = (musicId: string) => (evaluation: number) => {
     fetch(`/api/musics/${musicId}/evaluation`, {
