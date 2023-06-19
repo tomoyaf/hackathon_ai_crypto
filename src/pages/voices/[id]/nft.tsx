@@ -107,7 +107,8 @@ export default function IndexPage() {
           </k.div>
           {isOwner && (
             <k.div flexGrow="1" display="flex" justify="flex-end">
-              <k.button
+              <k.a
+                href={data?.url}
                 boxShadow="0 2px 18px rgb(190 22 72)"
                 borderWidth="2px"
                 borderStyle="solid"
@@ -125,9 +126,10 @@ export default function IndexPage() {
                 _hover={{
                   opacity: 0.7,
                 }}
+                download
               >
                 RVCモデルダウンロード
-              </k.button>
+              </k.a>
             </k.div>
           )}
         </k.div>
