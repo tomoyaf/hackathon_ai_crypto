@@ -36,7 +36,7 @@ export function useMetaMask() {
       const { provider: newProvider, accounts: newAccounts } =
         await contractUtils.createMetaMaskProvider(window.ethereum);
 
-      if (!accounts?.length)
+      if (!newAccounts?.length)
         throw new Error("ウォレットアカウントの接続に失敗しました");
       setProvider(newProvider);
       setAccounts(newAccounts);
