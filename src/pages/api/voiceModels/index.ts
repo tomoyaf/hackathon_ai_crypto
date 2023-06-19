@@ -38,7 +38,7 @@ export default async function handler(
           return;
         }
 
-        const { title, description, thumbnailUrl, rvcModelUrl, voiceId } =
+        const { title, description, thumbnailUrl, rvcModelUrl, voiceId, rule } =
           req.body;
 
         if (
@@ -46,11 +46,19 @@ export default async function handler(
           description == null ||
           thumbnailUrl == null ||
           rvcModelUrl == null ||
-          voiceId == null
+          voiceId == null ||
+          rule == null
         ) {
           res.status(400).json({
             message: "不正なreq.body",
-            body: { title, description, thumbnailUrl, rvcModelUrl, voiceId },
+            body: {
+              title,
+              description,
+              thumbnailUrl,
+              rvcModelUrl,
+              voiceId,
+              rule,
+            },
           });
           return;
         }
@@ -77,6 +85,7 @@ export default async function handler(
             url: rvcModelUrl,
             userId: user.id,
             voiceId: +voiceId,
+            rule,
           },
         });
 

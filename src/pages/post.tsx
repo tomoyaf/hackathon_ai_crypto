@@ -25,6 +25,7 @@ export default function PostPage() {
     price: number;
     royaltyRate: number;
     maxSupply: number;
+    rule: string;
   }>({
     title: "",
     description: "",
@@ -33,6 +34,8 @@ export default function PostPage() {
     price: 100,
     royaltyRate: 5,
     maxSupply: 100,
+    rule: `・本モデルに伴ういかなる損害についても、当方は一切の責任を負いません。
+・公序良俗に反した利用の禁止。`,
   });
 
   const router = useRouter();
@@ -322,6 +325,23 @@ export default function PostPage() {
                 RVCモデルをアップロード
               </k.div>
             )}
+          </k.label>
+
+          <k.label display="flex" flexDir="column" gap="4px" m="12px 0 0">
+            <k.span fontSize="0.85rem">あなたの声の利用規約</k.span>
+            <k.textarea
+              p="4px 8px"
+              borderRadius="4px"
+              color="#2e3855"
+              value={formState.rule}
+              onChange={(e) => {
+                setFormState((s) => ({
+                  ...s,
+                  rule: e.target.value,
+                }));
+              }}
+              required
+            />
           </k.label>
         </k.div>
 

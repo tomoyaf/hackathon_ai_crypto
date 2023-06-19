@@ -88,6 +88,7 @@ model VoiceModel {
   title String
   thumbnailUrl String
   description String
+  rule String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   musics Music[]
   userVoiceModelPurchase UserVoiceModelPurchase?

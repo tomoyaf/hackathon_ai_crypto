@@ -92,6 +92,7 @@ export default function IndexPage() {
               {data?.title}
             </k.h1>
             <k.div color="#9f9f9f">{data?.description}</k.div>
+            <k.div color="#9f9f9f">{data?.rule}</k.div>
           </k.div>
         </k.div>
       </Upper>
