@@ -43,6 +43,8 @@ export default function IndexPage() {
     })();
   }, [data?.voiceId]);
 
+  const [isBuyable, setIsBuyable] = React.useState(true);
+
   // 購入処理
   const [mintedResult, setMintedResult] = React.useState<{
     receipt: ContractReceipt;
@@ -140,6 +142,38 @@ export default function IndexPage() {
             <k.div color="#9f9f9f">{data?.description}</k.div>
             <k.div color="#9f9f9f">{data?.rule}</k.div>
           </k.div>
+
+          {isBuyable && (
+            <k.div
+              flexGrow="1"
+              display="flex"
+              justify="flex-end"
+              alignItems="center"
+            >
+              <k.button
+                boxShadow="0 2px 18px rgb(190 22 72)"
+                borderWidth="2px"
+                borderStyle="solid"
+                borderColor="#c3164a"
+                color="#f22e6a"
+                display="flex"
+                height="fit-content"
+                width="fit-content"
+                p="24px 40px"
+                borderRadius="8px"
+                fontWeight="900"
+                transition="opacity ease 220ms"
+                bg="linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.98) 100%)"
+                fontSize="1.2rem"
+                onClick={mint}
+                _hover={{
+                  opacity: 0.7,
+                }}
+              >
+                NFT購入
+              </k.button>
+            </k.div>
+          )}
         </k.div>
       </Upper>
 

@@ -234,7 +234,7 @@ export default function PostPage() {
           />
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">転売還元率(%)</k.span>
+          <k.span fontSize="0.85rem">二次流通還元率(%)</k.span>
           <k.input
             type="number"
             p="4px 8px"
