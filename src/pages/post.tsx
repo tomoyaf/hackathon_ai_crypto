@@ -83,16 +83,20 @@ export default function PostPage() {
   // コントラクターへの登録
   const registerToContract = async () => {
     const { contract } = await connectToMetaMask();
-    if (!contract) throw new Error("コントラクターが見つかりません");
 
     // 現在の価格を取得
     const addItemPrice = await contract.addItemPrice();
     const balance = await contract.signer.getBalance();
-    const estimatedGas = await contract.estimateGas.requestAddMintableItem();
-    if (balance.lt(estimatedGas.add(addItemPrice))) {
-      toast.error("残高が不足しております");
-      return;
-    }
+    const estimatedGas =
+      await readOnlyContract.estimateGas.requestAddMintableItem(
+        utils.parseEther(formState.price.toString()),
+        formState.maxSupply,
+        formState.royaltyRate * 100,
+        { value: addItemPrice }
+      );
+
+    if (balance.lt(estimatedGas.add(addItemPrice)))
+      throw new Error("残高が足りません");
 
     const tx = await contract.requestAddMintableItem(
       utils.parseEther(formState.price.toString()),
@@ -109,41 +113,44 @@ export default function PostPage() {
     return voiceId;
   };
 
-  const errorMessageHandler = (e: any) => {
-    console.error(e);
-    switch (e.code) {
-      case -32603:
-        return "登録に必要な残高が足りません";
-      default:
-        return "アップロードに失敗しました";
-    }
-  };
-
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    const res = await toast.promise(
-      (async () => {
-        const voiceId = await registerToContract();
+    try {
+      const voiceId = await toast.promise(registerToContract(), {
+        loading: "コントラクターと通信中です",
+        success: "コントラクターへの登録が完了しました",
+        error: (e) => {
+          switch (e?.code) {
+            case -32603:
+              return "登録に必要な残高が足りません";
+            default:
+              return e?.message ?? "コントラクターへの登録に失敗しました";
+          }
+        },
+      });
 
-        return await fetch("/api/voiceModels", {
+      const res = await toast.promise(
+        fetch("/api/voiceModels", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ ...formState, voiceId }),
-        });
-      })(),
-      {
-        loading: "アップロード中です",
-        success: "アップロードが完了しました",
-        error: (err) => errorMessageHandler(err),
-      }
-    );
-    const savedVoiceModel = (await res.json())?.savedVoiceModel;
+        }),
+        {
+          loading: "アップロード中です",
+          success: "アップロードが完了しました",
+          error: "アップロードに失敗しました",
+        }
+      );
+      const savedVoiceModel = (await res.json())?.savedVoiceModel;
 
-    if (savedVoiceModel?.id != null) {
-      router.push(`/voices/${savedVoiceModel.id}`);
+      if (savedVoiceModel?.id != null) {
+        router.push(`/voices/${savedVoiceModel.id}`);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 

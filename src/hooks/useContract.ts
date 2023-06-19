@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { ethers } from "ethers";
 import * as contractUtils from "@/utils/contractFrontend";
 
 export function useMetaMask() {
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
-  const [accounts, setAccounts] = useState<string[]>();
+  const providerRef = useRef<ethers.providers.Web3Provider>();
+  const accountsRef = useRef<string[]>();
+  const contractRef = useRef<contractUtils.VoiceTokenType>();
 
   const connectContract = (
     provider?: ethers.providers.Web3Provider,
@@ -15,11 +16,35 @@ export function useMetaMask() {
     return _contract;
   };
 
+  const connectToMetaMask = async () => {
+    if (
+      providerRef.current &&
+      accountsRef.current?.length &&
+      contractRef.current
+    )
+      return {
+        provider: providerRef.current,
+        accounts: accountsRef.current,
+        contract: contractRef.current,
+      };
+
+    // 接続を初期化する
+    if (!window?.ethereum) throw new Error("ウォレットが見つかりませんでした");
+    const { provider, accounts } = await contractUtils.createMetaMaskProvider(
+      window.ethereum
+    );
+    providerRef.current = provider;
+    accountsRef.current = accounts;
+    contractRef.current = connectContract(provider, accounts);
+    if (!contractRef.current)
+      throw new Error("コントラクトの初期化に失敗しました");
+    return { provider, accounts, contract: contractRef.current };
+  };
+
   useEffect(() => {
     window.ethereum?.on("accountsChanged", (_accounts: string[]) => {
-      if (accounts?.every((account) => _accounts.includes(account))) return;
-      setAccounts(_accounts);
-      connectContract(provider, _accounts);
+      accountsRef.current = _accounts;
+      contractRef.current = connectContract(providerRef.current, _accounts);
     });
 
     return () => {
@@ -27,25 +52,5 @@ export function useMetaMask() {
     };
   }, []);
 
-  const connectToMetaMask = useCallback(async () => {
-    const { _provider, _accounts } = await (async () => {
-      if (provider && accounts?.length)
-        return { _provider: provider, _accounts: accounts };
-      if (!window?.ethereum)
-        throw new Error("ウォレットとの接続に失敗しました");
-      const { provider: newProvider, accounts: newAccounts } =
-        await contractUtils.createMetaMaskProvider(window.ethereum);
-
-      if (!accounts?.length)
-        throw new Error("ウォレットアカウントの接続に失敗しました");
-      setProvider(newProvider);
-      setAccounts(newAccounts);
-      return { _provider: newProvider, _accounts: newAccounts };
-    })();
-
-    const contract = connectContract(_provider, _accounts);
-    return { provider, accounts, contract };
-  }, [provider, accounts]);
-
-  return { connectToMetaMask, provider, accounts };
+  return { connectToMetaMask };
 }
