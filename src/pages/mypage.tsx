@@ -18,7 +18,6 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { Card } from "@/components/card";
-import { useContract, useMetaMask } from "@/hooks/useContract";
 
 export default function IndexPage() {
   const { status, data: session } = useSession();

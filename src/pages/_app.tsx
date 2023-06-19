@@ -5,6 +5,7 @@ import "../app/globals.css";
 import { Toaster } from "react-hot-toast";
 import { RecoilRoot } from "recoil";
 import { PlayerProvider } from "@/hooks/usePlayer";
+import { Onboard } from "@/components/onboard";
 
 function App({
   Component,
@@ -17,6 +18,7 @@ function App({
         <PlayerProvider>
           <Toaster />
           {getLayout(<Component {...pageProps} />)}
+          <Onboard />
         </PlayerProvider>
       </SessionProvider>
     </RecoilRoot>
