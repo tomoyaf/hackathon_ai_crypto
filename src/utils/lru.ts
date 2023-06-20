@@ -8,12 +8,16 @@ const authConfig = {
 
 // シングルトンクラスが開発環境で使えないためこのような形にした
 export function getAuthKeyStore() {
-  if (process.env.NODE_ENV !== "production") {
-    global._authKeyStore =
-      global._authKeyStore || new LRUCache<string, any>(authConfig);
-    return global._authKeyStore as LRUCache<string, any>;
-  } else {
-    _auth = _auth || new LRUCache<string, any>(authConfig);
-    return _auth;
-  }
+  // if (process.env.NODE_ENV !== "production") {
+  //   global._authKeyStore =
+  //     global._authKeyStore || new LRUCache<string, any>(authConfig);
+  //   return global._authKeyStore as LRUCache<string, any>;
+  // } else {
+  //   _auth = _auth || new LRUCache<string, any>(authConfig);
+  //   return _auth;
+  // }
+
+  global._authKeyStore =
+    global._authKeyStore || new LRUCache<string, any>(authConfig);
+  return global._authKeyStore as LRUCache<string, any>;
 }
