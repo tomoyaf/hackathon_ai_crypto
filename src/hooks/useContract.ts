@@ -2,10 +2,15 @@ import { useEffect, useRef } from "react";
 import { ethers } from "ethers";
 import * as contractUtils from "@/utils/contractFrontend";
 
+const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
+  ? +process.env.NEXT_PUBLIC_CHAIN_ID
+  : 0;
+
 export function useMetaMask() {
   const providerRef = useRef<ethers.providers.Web3Provider>();
   const accountsRef = useRef<string[]>();
   const contractRef = useRef<contractUtils.VoiceTokenType>();
+  const isChainIdCorrectRef = useRef<boolean>(false);
 
   const connectContract = (
     provider?: ethers.providers.Web3Provider,
@@ -20,7 +25,8 @@ export function useMetaMask() {
     if (
       providerRef.current &&
       accountsRef.current?.length &&
-      contractRef.current
+      contractRef.current &&
+      isChainIdCorrectRef.current
     )
       return {
         provider: providerRef.current,
@@ -33,6 +39,12 @@ export function useMetaMask() {
     const { provider, accounts } = await contractUtils.createMetaMaskProvider(
       window.ethereum
     );
+
+    const network = await provider.getNetwork();
+    isChainIdCorrectRef.current = network.chainId === CHAIN_ID;
+    if (!isChainIdCorrectRef.current)
+      throw new Error("mumbaiテストネットに接続してください");
+
     providerRef.current = provider;
     accountsRef.current = accounts;
     contractRef.current = connectContract(provider, accounts);
@@ -58,8 +70,10 @@ export function useMetaMask() {
       contractRef.current = connectContract(providerRef.current, _accounts);
     });
 
+    window.ethereum?.on("chainChanged", (chainId) => window.location.reload());
     return () => {
       window.ethereum?.removeAllListeners("accountsChanged");
+      window.ethereum?.removeAllListeners("chainChanged");
     };
   }, []);
 

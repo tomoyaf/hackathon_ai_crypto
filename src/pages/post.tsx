@@ -86,26 +86,15 @@ export default function PostPage() {
 
     // 現在の価格を取得
     const addItemPrice = await contract.addItemPrice();
-    const balance = await contract.signer.getBalance();
-    const estimatedGas =
-      await readOnlyContract.estimateGas.requestAddMintableItem(
-        utils.parseEther(formState.price.toString()),
-        formState.maxSupply,
-        formState.royaltyRate * 100,
-        {
-          value: addItemPrice,
-        }
-      );
-
-    if (balance.lt(estimatedGas.add(addItemPrice)))
-      throw new Error("残高が足りません");
-
+    const gasPrice = await contractUtils.calcGasPrice();
     const tx = await contract.requestAddMintableItem(
       utils.parseEther(formState.price.toString()),
       formState.maxSupply,
       formState.royaltyRate * 100,
       {
         value: addItemPrice,
+        type: 2, // EIP-1559
+        maxFeePerGas: gasPrice,
       }
     );
 

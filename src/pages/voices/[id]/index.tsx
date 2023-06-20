@@ -77,22 +77,11 @@ export default function IndexPage() {
         return;
       }
 
-      const balance = await metaMaskContract.signer.getBalance();
-      const estimatedGas = await readOnlyContract.estimateGas.safeMint(
-        selfAddress,
-        data.voiceId,
-        {
-          value: price,
-        }
-      );
-
-      if (balance.lt(estimatedGas.add(price))) {
-        toast.error("残高が不足しております");
-        return;
-      }
-
+      const gasPrice = await contractUtils.calcGasPrice();
       const tx = await metaMaskContract.safeMint(selfAddress, data.voiceId, {
         value: price,
+        maxFeePerGas: gasPrice,
+        type: 2, // EIP-1559
       });
       const receipt = await tx.wait();
       const { tokenId } = contractUtils.extractMintedArgsFromTxResult(receipt);

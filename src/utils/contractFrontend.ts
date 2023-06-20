@@ -78,6 +78,13 @@ export function extractMintedArgsFromTxResult(receipt: ethers.ContractReceipt) {
   };
 }
 
+// 現状のガス代に40%上乗せした値を返す
+export async function calcGasPrice() {
+  const provider = createReadOnlyProvider();
+  const gasPrice = await provider.getGasPrice();
+  return gasPrice.mul(140).div(100);
+}
+
 export function createPolygonScanUrl(txHash: string) {
   return `https://mumbai.polygonscan.com/tx/${txHash}`;
 }

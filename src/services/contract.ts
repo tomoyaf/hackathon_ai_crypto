@@ -43,22 +43,35 @@ export async function connectContract() {
   return { contract, ownerWallet, provider };
 }
 
+// 現状のガス代に40%上乗せした値を返す
+export async function calcGasPrice(provider: ethers.providers.JsonRpcProvider) {
+  const gasPrice = await provider.getGasPrice();
+  return gasPrice.mul(140).div(100);
+}
+
 // 音声販売者が音声モデルをサービス、コントラクト両方に登録後、metadataを登録して販売可能にする
 export async function acceptAddMintableItem(
   voiceId: number,
   metadataUrl: string
 ) {
-  const { contract } = await connectContract();
-  const tx = await contract.acceptAddMintableItem(voiceId, metadataUrl);
+  const { contract, provider } = await connectContract();
+  const gasPrice = await calcGasPrice(provider);
+  const tx = await contract.acceptAddMintableItem(voiceId, metadataUrl, {
+    type: 2,
+    maxFeePerGas: gasPrice,
+  });
   await tx.wait();
 }
 
 // 販売可能に出来なかった場合、承認待ち情報を削除して登録料を返金する
 export async function refund(voiceId: number) {
-  const { contract } = await connectContract();
+  const { contract, provider } = await connectContract();
   const [addItemPrice] = await contract.getCurrentSetting();
+  const gasPrice = await calcGasPrice(provider);
   const tx = await contract.refundAddMintableItemFee(voiceId, {
     value: addItemPrice,
+    type: 2,
+    maxFeePerGas: gasPrice,
   });
   await tx.wait();
 }
