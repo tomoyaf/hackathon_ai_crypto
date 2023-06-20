@@ -43,6 +43,7 @@
   "devDependencies": {
     "@metamask/providers": "^11.0.0",
     "@types/formidable": "^2.0.6",
+    "@types/react-scroll": "^1.8.7",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^2.8.8",
     "prisma": "^4.15.0",
