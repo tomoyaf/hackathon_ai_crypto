@@ -2,7 +2,7 @@
 import { css, k, styled } from "@kuma-ui/core";
 import { Layout } from "@/components";
 import React from "react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import useSWR from "swr";
 import {
   Music,
@@ -89,7 +89,23 @@ export default function IndexPage() {
               {session?.user?.name}
             </k.h1>
           </k.div>
-          <k.div position="absolute" right="24px" bottom="16px">
+          <k.div
+            position="absolute"
+            right="24px"
+            bottom="16px"
+            display="flex"
+            flexDir="column"
+            gap="12px"
+          >
+            <k.button
+              onClick={() => signOut()}
+              fontSize="0.85rem"
+              display="flex"
+              gap="4px"
+              color="#35d0ac"
+            >
+              ログアウト
+            </k.button>
             <k.a
               href="https://forms.gle/qCef4L3zN1fWUvPMA"
               target="_blank"
@@ -142,7 +158,7 @@ export default function IndexPage() {
 
         {tabs.findIndex((tab) => tab.label === "NFT") === selectedTab && (
           <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
-            {(myInfo?.userVoiceModelPurchases.length ?? 0) === 0 ? (
+            {(myInfo?.userVoiceModelPurchases?.length ?? 0) === 0 ? (
               <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
                 <k.p>まだ声モデルを購入していないようです。</k.p>
                 <k.p>
