@@ -10,6 +10,7 @@ import useSWR from "swr";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { VoiceModel, Music } from "@prisma/client";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 type VoiceModelWithMusics = VoiceModel & {
   musics: (Music & { isLiked: boolean; voiceModel: VoiceModel })[];
@@ -152,12 +153,33 @@ export default function IndexPage() {
               alt={data?.title}
             />
           </k.div>
-          <k.div display="flex" justify="center" flexDir="column" zIndex="1">
+          <k.div
+            display="flex"
+            justify="center"
+            flexDir="column"
+            zIndex="1"
+            gap="12px"
+          >
             <k.h1 fontSize="3rem" color="white" fontWeight={900}>
               {data?.title}
             </k.h1>
             <k.div color="#9f9f9f">{data?.description}</k.div>
             <k.div color="#9f9f9f">{data?.rule}</k.div>
+
+            <k.div>
+              <k.a
+                href="https://forms.gle/Hat8qMGZwY6N6bteA"
+                target="_blank"
+                rel="noopener noreferrer"
+                fontSize="0.85rem"
+                display="flex"
+                gap="4px"
+                color="#35d0ac"
+              >
+                規約に反したコンテンツの報告
+                <ArrowTopRightOnSquareIcon width="15px" />
+              </k.a>
+            </k.div>
           </k.div>
 
           {isBuyable && !owned && (
