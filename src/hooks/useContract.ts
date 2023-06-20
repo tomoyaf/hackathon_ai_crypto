@@ -41,6 +41,17 @@ export function useMetaMask() {
     return { provider, accounts, contract: contractRef.current };
   };
 
+  const createAuthSignature = async () => {
+    const { provider } = await connectToMetaMask();
+
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    const res = await fetch(`/api/wallets/authKey?address=${address}`);
+    const { authKey } = await res.json();
+    const signature = await signer.signMessage(authKey);
+    return { signature, address };
+  };
+
   useEffect(() => {
     window.ethereum?.on("accountsChanged", (_accounts: string[]) => {
       accountsRef.current = _accounts;
@@ -52,5 +63,5 @@ export function useMetaMask() {
     };
   }, []);
 
-  return { connectToMetaMask };
+  return { connectToMetaMask, createAuthSignature };
 }

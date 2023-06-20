@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { uploadFile } from "../utils/storage";
 import { ethers } from "ethers";
+import { getAuthKeyStore } from "../utils/lru";
 // smart-contract フォルダ内でnpm run compileを実行してください
 import compiledInfo from "../../smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
 import { VoiceToken } from "../../smart-contract/typechain-types";
@@ -60,6 +61,28 @@ export async function refund(voiceId: number) {
     value: addItemPrice,
   });
   await tx.wait();
+}
+
+export async function ownedVoiceCount(adress: string, voiceId: number) {
+  const { contract } = await connectContract();
+  const ownedCount = await contract.ownedVoiceCount(adress, voiceId);
+  return ownedCount.toNumber();
+}
+
+export function getAuthKey(address: string) {
+  const authKeyCache = getAuthKeyStore();
+  const authKey = `authKey-${randomUUID()}`;
+  authKeyCache.set(address, authKey);
+  return authKey;
+}
+
+export function verifyAddress(address: string, signature: string) {
+  const authKeyCache = getAuthKeyStore();
+  const authKey = authKeyCache.get(address);
+  authKeyCache.delete(address);
+  if (!authKey) return false;
+  const signer = ethers.utils.verifyMessage(authKey, signature);
+  return signer === address;
 }
 
 // debug code
