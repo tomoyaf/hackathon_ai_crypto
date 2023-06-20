@@ -390,6 +390,12 @@ export default function PostPage() {
         </k.button>
       </k.form>
 
+      <k.div mt="16px">
+        <k.p fontSize="0.85rem" opacity="0.7">
+          Mumbai testnetに接続した上でMetaMaskを設定していただく必要があります。
+        </k.p>
+      </k.div>
+
       <k.div
         width="500px"
         maxWidth="90vw"
