@@ -11,7 +11,9 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="ja-JP">
-        <Head></Head>
+        <Head>
+          <link rel="icon" type="image/png" href="/logo.png" />
+        </Head>
         <body>
           <noscript></noscript>
           <Main />
