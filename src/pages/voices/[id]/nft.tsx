@@ -7,6 +7,7 @@ import useSWR from "swr";
 import { useRouter } from "next/router";
 import { VoiceModel, Music } from "@prisma/client";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-hot-toast";
 
 type VoiceModelWithMusics = VoiceModel & {
   musics: (Music & { isLiked: boolean; voiceModel: VoiceModel })[];
@@ -14,46 +15,42 @@ type VoiceModelWithMusics = VoiceModel & {
 
 export default function IndexPage() {
   const router = useRouter();
-  // const { provider, accounts, connectToMetaMask } = useMetaMask();
-  // connectToMetaMask();
-  // metamask連携が出来ない場合は、read only providerを使う
+  const { createAuthSignature } = useMetaMask();
   const { id } = router.query;
   const { data } = useSWR<VoiceModelWithMusics>(
-    `/api/voiceModels/${id}`,
+    () => (id ? `/api/voiceModels/${id}` : null),
     (url: string) => fetch(url).then((res) => res.json())
   );
 
-  const [isOwner, setIsOwner] = React.useState(true);
+  const _downloadModel = async () => {
+    const { signature, address } = await createAuthSignature();
+    const res = await fetch(`/api/voiceModels/${id}/download`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ signature, address }),
+    });
+    const { modelDownloadUrl } = await res.json();
+    if (!modelDownloadUrl) throw new Error("認証に失敗しました");
+    return modelDownloadUrl as string;
+  };
 
-  // const [isSoldOut, setIsSoldOut] = React.useState(false);
-  // const [price, setPrice] = React.useState("");
+  const [downloadModelUrl, setDownloadModelUrl] = React.useState("");
+  const downloadModel = async () => {
+    try {
+      const modelDownloadUrl = await toast.promise(_downloadModel(), {
+        loading: "所有権を確認しています...",
+        success: "所有権を確認しました。ダウンロードを開始します。",
+        error: "所有権を確認できませんでした。",
+      });
 
-  // React.useEffect(() => {
-  //   (async () => {
-  //     console.log({ contract, data });
-
-  //     if (!contract || !data?.voiceId) return;
-  //     const [currentSoldCount, maxSupply, isUnlimitedSupply] =
-  //       await contract.getMintableCount(data?.voiceId);
-
-  //     console.log(currentSoldCount, maxSupply, isUnlimitedSupply);
-
-  //     const isMintable = isUnlimitedSupply || currentSoldCount < maxSupply;
-  //     setIsSoldOut(isMintable);
-
-  //     if (accounts == null || accounts.length === 0 || data?.voiceId == null) {
-  //       console.log(JSON.stringify({ accounts, data }));
-  //       return;
-  //     }
-
-  //     const tokenId = await contract.hasOwnedVoiceId(
-  //       accounts[0],
-  //       data.voiceId + 100
-  //     );
-
-  //     console.log(JSON.stringify({ accounts, data, tokenId }));
-  //   })();
-  // }, [contract, data?.voiceId]);
+      setDownloadModelUrl(modelDownloadUrl);
+      location.assign(modelDownloadUrl);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const updateEvaluation = (musicId: string) => (evaluation: number) => {
     fetch(`/api/musics/${musicId}/evaluation`, {
@@ -106,16 +103,16 @@ export default function IndexPage() {
             <k.div color="#9f9f9f">{data?.description}</k.div>
             <k.div color="#9f9f9f">{data?.rule}</k.div>
           </k.div>
-          {isOwner && (
-            <k.div
-              flexGrow="1"
-              display="flex"
-              alignItems="flex-end"
-              flexDir="column"
-              gap="24px"
-            >
+          <k.div
+            flexGrow="1"
+            display="flex"
+            alignItems="flex-end"
+            flexDir="column"
+            gap="24px"
+          >
+            {downloadModelUrl ? (
               <k.a
-                href={data?.url}
+                href={downloadModelUrl}
                 boxShadow="0 2px 18px rgb(190 22 72)"
                 borderWidth="2px"
                 borderStyle="solid"
@@ -137,21 +134,44 @@ export default function IndexPage() {
               >
                 RVCモデルダウンロード
               </k.a>
-
-              <k.a
-                href="https://forms.gle/gVfKAuZ6u8VjeXDs9"
-                target="_blank"
-                rel="noopener noreferrer"
-                fontSize="0.85rem"
+            ) : (
+              <k.button
+                boxShadow="0 2px 18px rgb(190 22 72)"
+                borderWidth="2px"
+                borderStyle="solid"
+                borderColor="#c3164a"
+                color="#f22e6a"
                 display="flex"
-                gap="4px"
-                color="#35d0ac"
+                height="fit-content"
+                width="fit-content"
+                p="24px 40px"
+                borderRadius="8px"
+                fontWeight="900"
+                transition="opacity ease 220ms"
+                bg="linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.98) 100%)"
+                fontSize="1.2rem"
+                _hover={{
+                  opacity: 0.7,
+                }}
+                onClick={downloadModel}
               >
-                声変換代行サービス依頼フォーム
-                <ArrowTopRightOnSquareIcon width="15px" />
-              </k.a>
-            </k.div>
-          )}
+                RVCモデルダウンロード
+              </k.button>
+            )}
+
+            <k.a
+              href="https://forms.gle/gVfKAuZ6u8VjeXDs9"
+              target="_blank"
+              rel="noopener noreferrer"
+              fontSize="0.85rem"
+              display="flex"
+              gap="4px"
+              color="#35d0ac"
+            >
+              声変換代行サービス依頼フォーム
+              <ArrowTopRightOnSquareIcon width="15px" />
+            </k.a>
+          </k.div>
         </k.div>
       </Upper>
 

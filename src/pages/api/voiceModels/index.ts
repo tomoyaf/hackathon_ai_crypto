@@ -21,7 +21,7 @@ export default async function handler(
           take: 100,
         });
 
-        res.status(200).json(voiceModels);
+        res.status(200).json(voiceModels.map((v) => ({ ...v, url: "" })));
       } catch (e) {
         console.error(e);
         res.status(500).json({ message: "サーバーエラーが発生しました。" });

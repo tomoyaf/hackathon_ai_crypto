@@ -1,7 +1,7 @@
 import prisma from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
+import { authOptions } from "../../auth/[...nextauth]";
 
 const findUser = async (email: string | null) => {
   if (email == null) return null;
@@ -45,11 +45,17 @@ export default async function handler(
         .json({ message: "VoiceModelが見つかりませんでした。" });
     }
 
+    // download urlを隠す
     res.status(200).json({
       ...voiceModel,
+      url: "",
       musics: [
         ...voiceModel.musics.map((m) => ({
           ...m,
+          voiceModel: {
+            ...m.voiceModel,
+            url: "",
+          },
           isLiked:
             user?.id != null &&
             m.musicEvaluations.some(

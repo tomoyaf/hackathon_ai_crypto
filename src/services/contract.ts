@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { uploadFile } from "../utils/storage";
 import { ethers } from "ethers";
+import prisma from "@/utils/prisma";
 // smart-contract フォルダ内でnpm run compileを実行してください
 import compiledInfo from "../../smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
 import { VoiceToken } from "../../smart-contract/typechain-types";
@@ -60,6 +61,35 @@ export async function refund(voiceId: number) {
     value: addItemPrice,
   });
   await tx.wait();
+}
+
+export async function ownedVoiceCount(adress: string, voiceId: number) {
+  const { contract } = await connectContract();
+  const ownedCount = await contract.ownedVoiceCount(adress, voiceId);
+  return ownedCount.toNumber();
+}
+
+export async function getAuthKey(address: string) {
+  const authKey = `authKey-${randomUUID()}`;
+  await prisma.walletAuthKey.upsert({
+    where: { address },
+    create: { address, authKey },
+    update: { authKey },
+  });
+  return authKey;
+}
+
+export async function verifyAddress(address: string, signature: string) {
+  const authInfo = await prisma.walletAuthKey.findFirst({
+    where: {
+      address,
+      createdAt: { gte: new Date(Date.now() - 1000 * 60 * 10) },
+    },
+  });
+  if (!authInfo) return false;
+  await prisma.walletAuthKey.delete({ where: { address } });
+  const signer = ethers.utils.verifyMessage(authInfo.authKey, signature);
+  return signer === address;
 }
 
 // debug code
