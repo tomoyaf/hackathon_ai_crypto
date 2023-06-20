@@ -12,8 +12,16 @@ import {
   MusicalNoteIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
 
 export default function PostPage() {
+  const { status } = useSession();
+  React.useEffect(() => {
+    if (status === "unauthenticated") {
+      signIn();
+    }
+  }, [status]);
+
   const { connectToMetaMask } = useMetaMask();
   const readOnlyContract = contractUtils.connectReadOnlyContract();
   const [formState, setFormState] = React.useState<{
