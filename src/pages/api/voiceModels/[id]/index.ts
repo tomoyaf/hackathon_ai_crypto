@@ -45,11 +45,17 @@ export default async function handler(
         .json({ message: "VoiceModelが見つかりませんでした。" });
     }
 
+    // download urlを隠す
     res.status(200).json({
       ...voiceModel,
+      url: "",
       musics: [
         ...voiceModel.musics.map((m) => ({
           ...m,
+          voiceModel: {
+            ...m.voiceModel,
+            url: "",
+          },
           isLiked:
             user?.id != null &&
             m.musicEvaluations.some(
