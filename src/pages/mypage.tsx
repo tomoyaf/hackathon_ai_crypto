@@ -18,9 +18,12 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { Card } from "@/components/card";
+import { useMetaMask } from "@/hooks/useContract";
+import type { Nft } from "alchemy-sdk";
 
 export default function IndexPage() {
   const { status, data: session } = useSession();
+  const { getOwnedNFTs } = useMetaMask();
   React.useEffect(() => {
     if (status === "unauthenticated") {
       signIn();
@@ -46,6 +49,14 @@ export default function IndexPage() {
     { label: "投稿曲" },
     { label: "高評価した曲" },
   ] as const;
+
+  const [ownedNfts, setOwnedNfts] = React.useState<Nft[]>([]);
+  React.useEffect(() => {
+    (async () => {
+      const ownedNfts = await getOwnedNFTs();
+      setOwnedNfts(ownedNfts.nfts);
+    })().catch(console.error);
+  }, []);
 
   return (
     <k.div
@@ -142,7 +153,7 @@ export default function IndexPage() {
 
         {tabs.findIndex((tab) => tab.label === "NFT") === selectedTab && (
           <k.div width="100%" display="flex" flexWrap="wrap" gap="36px">
-            {(myInfo?.userVoiceModelPurchases.length ?? 0) === 0 ? (
+            {(ownedNfts.length ?? 0) === 0 ? (
               <k.div fontSize="1.2rem" color="#bbb" lineHeight="2.6rem">
                 <k.p>まだ声モデルを購入していないようです。</k.p>
                 <k.p>
@@ -164,12 +175,13 @@ export default function IndexPage() {
                 </k.div>
               </k.div>
             ) : (
-              myInfo?.userVoiceModelPurchases.map((userVoiceModelPurchase) => (
+              ownedNfts.map((nft) => (
                 <Card
-                  href={`/voices/${userVoiceModelPurchase.voiceModel.id}/nft`}
-                  imageUrl={userVoiceModelPurchase.voiceModel.thumbnailUrl}
-                  title={userVoiceModelPurchase.voiceModel.title}
-                  description={userVoiceModelPurchase.voiceModel.description}
+                  key={nft.tokenId}
+                  href={`/voices/${nft.tokenId}/nft`}
+                  imageUrl={nft.rawMetadata?.image || ""}
+                  title={nft.rawMetadata?.title || ""}
+                  description={nft.rawMetadata?.description || ""}
                 />
               ))
             )}

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { ethers } from "ethers";
 import * as contractUtils from "@/utils/contractFrontend";
+import type { Nft } from "alchemy-sdk";
 
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
   ? +process.env.NEXT_PUBLIC_CHAIN_ID
@@ -64,6 +65,16 @@ export function useMetaMask() {
     return { signature, address };
   };
 
+  const getOwnedNFTs = async () => {
+    const { provider } = await connectToMetaMask();
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    const res = await fetch(`/api/wallets/owned?address=${address}`);
+    const nfts = await res.json().then((result) => result.ownedNfts as Nft[]);
+
+    return { nfts };
+  };
+
   useEffect(() => {
     window.ethereum?.on("accountsChanged", (_accounts: string[]) => {
       accountsRef.current = _accounts;
@@ -77,5 +88,5 @@ export function useMetaMask() {
     };
   }, []);
 
-  return { connectToMetaMask, createAuthSignature };
+  return { connectToMetaMask, createAuthSignature, getOwnedNFTs };
 }

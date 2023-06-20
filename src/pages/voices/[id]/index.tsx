@@ -3,7 +3,7 @@ import { Layout, ListItem } from "@/components";
 import { k, styled, css } from "@kuma-ui/core";
 import { useMetaMask } from "@/hooks/useContract";
 import * as contractUtils from "@/utils/contractFrontend";
-import { utils, ContractReceipt, BigNumber } from "ethers";
+import { utils, BigNumber } from "ethers";
 import React from "react";
 import { InferGetServerSidePropsType } from "next";
 import useSWR from "swr";
@@ -50,18 +50,9 @@ export default function IndexPage() {
 
   // 購入処理
   const [owned, setOwned] = React.useState(false);
-  const [mintedResult, setMintedResult] = React.useState<{
-    receipt: ContractReceipt;
-    tokenId?: number;
-    voiceId?: number;
-  }>();
   const mint = async () => {
     if (!data?.voiceId || !isBuyable || !price || owned) return;
     const { contract: metaMaskContract } = await connectToMetaMask();
-    if (!metaMaskContract) {
-      toast.error("ウォレットに接続できませんでした");
-      return;
-    }
 
     const loadingId = toast.loading("購入処理中...");
     try {
@@ -88,9 +79,9 @@ export default function IndexPage() {
       toast.success("購入しました");
 
       // トランザクション結果
-      console.log(contractUtils.createPolygonScanUrl(receipt.transactionHash));
-      setOwned(true);
-      setMintedResult({ receipt, tokenId, voiceId: data.voiceId });
+      router.push(
+        `/voices/${data.id}/success?tokenId=${tokenId}&txHash=${receipt.transactionHash}`
+      );
     } catch (error) {
       console.error(error);
       toast.error("購入に失敗しました");

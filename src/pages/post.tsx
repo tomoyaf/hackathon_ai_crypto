@@ -366,23 +366,6 @@ export default function PostPage() {
           </k.label>
         </k.div>
 
-        {/* metamask連携とcontractへの登録処理のデバッグボタン 削除してもよし！ */}
-
-        {/* <k.button
-          type="button"
-          borderRadius="8px"
-          bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
-          fontWeight="bold"
-          transition="opacity ease 220ms"
-          _hover={{
-            opacity: 0.7,
-          }}
-          onClick={() => registerToContract()}
-          p="8px 0"
-        >
-          test
-        </k.button> */}
-
         <k.button
           type="submit"
           borderRadius="8px"
