@@ -1,9 +1,10 @@
 from flask import Flask, request
+import os
 
 app = Flask(__name__)
 
 @app.route('/', methods=["POST"])
 def preprocess():
-    body = request.get_data()
-    print(body)
-    return {'result': body}
+    result = request.get_json()
+    os.system("python preprocess.py ")  
+    return {'result': result}

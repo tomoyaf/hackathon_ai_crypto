@@ -92,6 +92,7 @@ model VoiceModel {
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   musics Music[]
   userVoiceModelPurchase UserVoiceModelPurchase?
+  voiceModelTrainJob VoiceModelTrainJob?
   createdAt DateTime @default(now())
 
   @@index([userId])
@@ -153,4 +154,15 @@ model Report {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model VoiceModelTrainJob {
+  id String @id @default(cuid())
+  description String
+  voiceModelId String
+  voiceModel VoiceModel @relation(fields: [voiceModelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([voiceModelId])
+  @@index([voiceModelId])
 }
