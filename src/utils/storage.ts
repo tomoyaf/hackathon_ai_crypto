@@ -6,7 +6,9 @@ export const storage = new Storage({
     type: "service_account",
     project_id: "aicrypto-389808",
     private_key_id: process.env.GCLOUD_PRIVATE_KEY_ID ?? "",
-    private_key: process.env.GCLOUD_PRIVATE ?? "",
+    private_key: (process.env.GCLOUD_PRIVATE ?? "")
+      .split(String.raw`\n`)
+      .join("\n"),
     client_email: "api-server@aicrypto-389808.iam.gserviceaccount.com",
     client_id: "114231271332667009312",
     auth_uri: "https://accounts.google.com/o/oauth2/auth",
