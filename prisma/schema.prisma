@@ -166,3 +166,9 @@ model VoiceModelTrainJob {
   @@unique([voiceModelId])
   @@index([voiceModelId])
 }
+
+model WalletAuthKey {
+  address String @id // wallet address
+  authKey String
+  createdAt DateTime @default(now())
+}

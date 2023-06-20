@@ -16,8 +16,7 @@ export default async function handler(
     return;
   }
 
-  console.log(address, signature);
-  const verified = verifyAddress(address, signature);
+  const verified = await verifyAddress(address, signature);
   if (!verified) {
     res.status(400).json({ message: "認証できませんでした。" });
     return;

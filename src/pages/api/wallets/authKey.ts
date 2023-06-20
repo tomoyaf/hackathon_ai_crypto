@@ -11,6 +11,6 @@ export default async function handler(
     return;
   }
 
-  const authKey = getAuthKey(req.query.address as string);
+  const authKey = await getAuthKey(req.query.address as string);
   res.status(200).json({ authKey });
 }
