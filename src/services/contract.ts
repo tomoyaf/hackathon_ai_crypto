@@ -10,6 +10,7 @@ export async function createTokenUrl(metadata: {
   name: string;
   description: string;
   image: string;
+  voiceId: number;
 }) {
   const fileName = `metadata/${randomUUID()}.json`;
   const metadataBuf = Buffer.from(
@@ -60,7 +61,7 @@ export async function acceptAddMintableItem(
     type: 2,
     maxFeePerGas: gasPrice,
   });
-  await tx.wait();
+  // await tx.wait();
 }
 
 // 販売可能に出来なかった場合、承認待ち情報を削除して登録料を返金する
@@ -73,7 +74,7 @@ export async function refund(voiceId: number) {
     type: 2,
     maxFeePerGas: gasPrice,
   });
-  await tx.wait();
+  // await tx.wait();
 }
 
 export async function ownedVoiceCount(adress: string, voiceId: number) {

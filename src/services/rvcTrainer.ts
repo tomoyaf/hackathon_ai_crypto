@@ -7,15 +7,16 @@ const ENDPOINT = "https://api.runpod.ai/v2/vvt5j6dmepozdn";
 export const JOB_STATUS = {
   IN_QUEUE: { type: 1, label: "IN_QUEUE" },
   IN_PROGRESS: { type: 2, label: "IN_PROGRESS" },
-  FINISH: { type: 3, label: "COMPLETED" },
+  FINISHED: { type: 3, label: "COMPLETED" },
+  FAILED: { type: 4, label: "ERROR" },
 } as const;
 
-export async function createTrainerConfig(voiceKey: string) {
+export async function createTrainerConfig(voiceModelId: string) {
   const configBuf = Buffer.from(
     JSON.stringify({
-      model_name: voiceKey,
+      model_name: voiceModelId,
       ignore_cache: false,
-      dataset_glob: `/workspace/download/${voiceKey}/corpus/*.wav`,
+      dataset_glob: `/workspace/download/${voiceModelId}/corpus/*.wav`,
       recursive: true,
       multiple_speakers: false,
       speaker_id: 0,
@@ -50,7 +51,7 @@ export async function createTrainerConfig(voiceKey: string) {
 
   const configFile = await uploadFile(
     configBuf,
-    `trainer-config/${voiceKey}.json`
+    `trainer-config/${voiceModelId}.json`
   );
 
   return configFile;

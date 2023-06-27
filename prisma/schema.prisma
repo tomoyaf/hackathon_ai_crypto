@@ -82,7 +82,7 @@ model UserVoiceModelPurchase {
 
 model VoiceModel {
   id      String    @id @default(cuid())
-  url     String
+  url     String?
   userId  String
   voiceId Int @unique
   title String
