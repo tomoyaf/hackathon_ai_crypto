@@ -1,0 +1,15 @@
+name: cron
+
+on:
+  schedule:
+    # 月曜日の 11:00 (JST) に処理を実行する。
+    # UTC の 02:00 は JST だと 11:00 。
+    - cron: "*/5 * * * *"
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: curl
+        run: curl --show-error "https://voice-chain.vercel.app/api/cron/checkTrainer"
