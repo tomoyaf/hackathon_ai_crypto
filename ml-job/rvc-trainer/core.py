@@ -13,44 +13,55 @@ storage_client = storage.Client(credentials=credentials, project="aicrypto-38980
 def audio_to_corpus(voice_url: str, key: str):
     response = requests.get(voice_url)
     DOWNLOAD_DIR = f"download/{key}"
-    os.makedirs(f"./{DOWNLOAD_DIR}", exist_ok=True)
-    open(f"./{DOWNLOAD_DIR}/audio.mp3", "wb").write(response.content)
-    subprocess.run(
+    os.makedirs(f"/workspace/{DOWNLOAD_DIR}", exist_ok=True)
+    open(f"/workspace/{DOWNLOAD_DIR}/audio.mp3", "wb").write(response.content)
+    res = subprocess.run(
         [
             sys.executable,
             "audio_to_copas.py",
             "--input",
-            f"../{DOWNLOAD_DIR}/audio.mp3",
+            f"/workspace/{DOWNLOAD_DIR}/audio.mp3",
             "--outdir",
-            f"../{DOWNLOAD_DIR}/corpus",
+            f"/workspace/{DOWNLOAD_DIR}/corpus",
         ],
-        shell=True,
-        cwd="../Voice_Separation_and_Selection",
+        capture_output=True,
+        check=True,
+        text=True,
+        cwd="/workspace/Voice_Separation_and_Selection/",
     )
+
+    print("return code: {}".format(res.returncode))
+    print("captured stdout: {}".format(res.stdout))
+    print("captured stderr: {}".format(res.stderr))
 
 
 def train_model(config_url: str, key: str):
     response = requests.get(config_url)
     DOWNLOAD_DIR = f"download/{key}"
-    os.makedirs(f"./{DOWNLOAD_DIR}", exist_ok=True)
-    open(f"./{DOWNLOAD_DIR}/setting.json", "wb").write(response.content)
+    os.makedirs(f"/workspace/{DOWNLOAD_DIR}", exist_ok=True)
+    open(f"/workspace/{DOWNLOAD_DIR}/setting.json", "wb").write(response.content)
 
-    subprocess.run(
+    res = subprocess.run(
         [
             sys.executable,
             "scripts/training_script.py",
-            "../{DOWNLOAD_DIR}/setting.json",
+            f"/workspace/{DOWNLOAD_DIR}/setting.json",
         ],
-        shell=True,
-        cwd="../rvc-webui",
+        capture_output=True,
+        text=True,
+        cwd="/workspace/rvc-webui/",
     )
+
+    print("return code: {}".format(res.returncode))
+    print("captured stdout: {}".format(res.stdout))
+    print("captured stderr: {}".format(res.stderr))
 
 
 def upload_model(key: str):
     bucket = storage_client.get_bucket("ai_crypto")
     blob = bucket.blob(f"models/{key}.pth")
     blob.upload_from_filename(
-        f"../rvc-webui/models/training/models/{key}/checkpoint/{key}-30.pth"
+        f"/workspace/rvc-webui/models/training/models/{key}/checkpoint/{key}-30.pth"
     )
 
     return blob.public_url
