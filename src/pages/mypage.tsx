@@ -23,7 +23,7 @@ import type { Nft } from "alchemy-sdk";
 
 export default function IndexPage() {
   const { status, data: session } = useSession();
-  const { getOwnedNFTs } = useMetaMask();
+  const { getOwnedNFTs, connectToMetaMask } = useMetaMask();
   React.useEffect(() => {
     if (status === "unauthenticated") {
       signIn();
@@ -53,7 +53,14 @@ export default function IndexPage() {
   const [ownedNfts, setOwnedNfts] = React.useState<Nft[]>([]);
   React.useEffect(() => {
     (async () => {
+      const { contract } = await connectToMetaMask();
       const ownedNfts = await getOwnedNFTs();
+      for (const nft of ownedNfts.nfts) {
+        nft.rawMetadata = nft.rawMetadata || {};
+        nft.rawMetadata.voiceId =
+          nft.rawMetadata?.voiceId ||
+          (await contract.getVoiceId(nft.tokenId)).toNumber();
+      }
       setOwnedNfts(ownedNfts.nfts);
     })().catch(console.error);
   }, []);
@@ -194,9 +201,9 @@ export default function IndexPage() {
               ownedNfts.map((nft) => (
                 <Card
                   key={nft.tokenId}
-                  href={`/voices/${nft.tokenId}/nft`}
+                  href={`/voices/nft/${nft.rawMetadata?.voiceId}`}
                   imageUrl={nft.rawMetadata?.image || ""}
-                  title={nft.rawMetadata?.title || ""}
+                  title={nft.title || ""}
                   description={nft.rawMetadata?.description || ""}
                 />
               ))

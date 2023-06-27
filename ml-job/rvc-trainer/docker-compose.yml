@@ -1,0 +1,19 @@
+version: "3.5"
+services:
+  rvc:
+    image: wintu2/rvc-trainer:latest
+    environment:
+      - "PYTHON_ENV=production"
+      - "TZ=Asia/Tokyo"
+    working_dir: /workspace
+    platform: linux/amd64
+    ports:
+      - "8080:80"
+    command: [sh, -c, uvicorn debug:app --host 0.0.0.0 --port 80 --reload]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

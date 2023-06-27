@@ -1,12 +1,17 @@
 import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
+import { useFeedItems } from "@/hooks/useFeedItems";
 import { useMetaMask } from "@/hooks/useContract";
 import * as contractUtils from "@/utils/contractFrontend";
 import React from "react";
 import { toast } from "react-hot-toast";
 import { utils } from "ethers";
 import { useRouter } from "next/navigation";
-import { MicrophoneIcon, MusicalNoteIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowTopRightOnSquareIcon,
+  MicrophoneIcon,
+  MusicalNoteIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 
@@ -24,7 +29,7 @@ export default function PostPage() {
     title: string;
     description: string;
     thumbnailUrl: string;
-    rvcModelUrl: string;
+    audioUrl: string;
     price: number;
     royaltyRate: number;
     maxSupply: number;
@@ -33,7 +38,7 @@ export default function PostPage() {
     title: "",
     description: "",
     thumbnailUrl: "",
-    rvcModelUrl: "",
+    audioUrl: "",
     price: 100,
     royaltyRate: 5,
     maxSupply: 3,
@@ -129,7 +134,7 @@ export default function PostPage() {
       });
 
       const res = await toast.promise(
-        fetch("/api/voiceModels", {
+        fetch("/api/voiceModels/trainer", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -174,16 +179,15 @@ export default function PostPage() {
         m="10vh 0 0"
       >
         <k.h2 fontSize="1.2rem" fontWeight="bold">
-          RVCモデルでの投稿
+          声モデルの作成
         </k.h2>
 
-        {/* 自動生成機能を実装したからいらないかも */}
-        {/* <k.div>
+        <k.div>
           <k.p fontSize="0.85rem" opacity="0.7">
-            声モデルの作成にお困りですか？完全無料で声モデル作成代行サービスを承っておりますので、お気軽に以下のフォームからご依頼ください！
+            自身の声の音声ファイルを作成する場合は、なるべく静かな場所で、以下の台本をハッキリとした声で読み上げてください。
           </k.p>
           <k.a
-            href="https://forms.gle/jg793nZZPaFi6oT87"
+            href="https://raw.githubusercontent.com/mmorise/ita-corpus/main/emotion_%E6%9C%97%E8%AA%AD%E8%80%85%E7%94%A8.pdf"
             target="_blank"
             rel="noopener noreferrer"
             fontSize="0.85rem"
@@ -191,10 +195,10 @@ export default function PostPage() {
             gap="4px"
             color="#35d0ac"
           >
-            声モデル作成代行サービス依頼フォーム
+            ITAコーパス台本のダウンロード
             <ArrowTopRightOnSquareIcon width="15px" />
           </k.a>
-        </k.div> */}
+        </k.div>
 
         <k.div display="flex" flexDir="column" gap="4px">
           <k.span fontSize="0.85rem">タイトル</k.span>
@@ -322,7 +326,7 @@ export default function PostPage() {
           </k.label>
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">RVCモデル</k.span>
+          <k.span fontSize="0.85rem">音声ファイル</k.span>
           <k.label
             cursor="pointer"
             width="fit-content"
@@ -333,12 +337,12 @@ export default function PostPage() {
           >
             <k.input
               type="file"
-              accept=".pth"
+              accept=".mp3,.wav"
               display="none"
-              onChange={handleChangeThumbnail("rvcModelUrl", "rvc_models/")}
+              onChange={handleChangeThumbnail("audioUrl", "train_voices/")}
             />
-            {formState.rvcModelUrl.length > 0 ? (
-              <k.div>{formState.rvcModelUrl}</k.div>
+            {formState.audioUrl.length > 0 ? (
+              <k.div>{formState.audioUrl}</k.div>
             ) : (
               <k.div
                 p="5px 16px"
@@ -346,7 +350,7 @@ export default function PostPage() {
                 borderRadius="8px"
                 bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
               >
-                RVCモデルをアップロード
+                音声をアップロード
               </k.div>
             )}
           </k.label>
@@ -396,7 +400,7 @@ export default function PostPage() {
           Testnetに接続した上でMetaMaskを設定していただく必要があります。
         </k.p>
         <k.p fontSize="0.85rem" opacity="0.7">
-          正式版リリース時にネットワークの切り替えが発生する可能性がありますのでご了承ください。
+          正式版リリース時に
         </k.p>
       </k.div>
 
@@ -425,7 +429,7 @@ export default function PostPage() {
           曲を投稿する <MusicalNoteIcon width="18px" />
         </Link>
         <Link
-          href="/voices/train"
+          href="/post"
           style={{
             display: "flex",
             justifyItems: "center",
@@ -437,7 +441,7 @@ export default function PostPage() {
             padding: "4px 24px",
           }}
         >
-          声モデルを作成する <MicrophoneIcon width="18px" />
+          RVCモデルを投稿する <MicrophoneIcon width="18px" />
         </Link>
       </k.div>
     </k.div>

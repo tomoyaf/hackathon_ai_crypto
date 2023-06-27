@@ -46,7 +46,7 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
     },
     {
       label: "投稿",
-      url: "/post",
+      url: "/voices/train",
       renderIcon: (props: { isSelected: boolean }) =>
         props.isSelected ? (
           <PlusCircleIconSolid className="w-5 h-5" />

@@ -150,6 +150,10 @@ contract VoiceToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
         return _ownedVoiceCount;
     }
 
+    function getVoiceId(uint256 tokenId) public view returns (uint256) {
+        return _voiceIds[tokenId];
+    }
+
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
         uint256 voiceId = _voiceIds[tokenId];
         MintableItem memory item = _mintableItems[voiceId];
