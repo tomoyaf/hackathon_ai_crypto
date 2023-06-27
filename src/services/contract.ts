@@ -3,7 +3,7 @@ import { uploadFile } from "../utils/storage";
 import { ethers } from "ethers";
 import prisma from "@/utils/prisma";
 // smart-contract フォルダ内でnpm run compileを実行してください
-import compiledInfo from "../../smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
+import compiledInfo from "../../smart-contract/contracts/VoiceToken.sol/VoiceToken.json";
 import { VoiceToken } from "../../smart-contract/typechain-types";
 
 export async function createTokenUrl(metadata: {
