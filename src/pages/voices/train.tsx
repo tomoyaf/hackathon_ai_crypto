@@ -29,7 +29,7 @@ export default function PostPage() {
     title: string;
     description: string;
     thumbnailUrl: string;
-    rvcModelUrl: string;
+    audioUrl: string;
     price: number;
     royaltyRate: number;
     maxSupply: number;
@@ -38,7 +38,7 @@ export default function PostPage() {
     title: "",
     description: "",
     thumbnailUrl: "",
-    rvcModelUrl: "",
+    audioUrl: "",
     price: 100,
     royaltyRate: 5,
     maxSupply: 3,
@@ -134,7 +134,7 @@ export default function PostPage() {
       });
 
       const res = await toast.promise(
-        fetch("/api/voiceModels", {
+        fetch("/api/voiceModels/trainer", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -179,7 +179,7 @@ export default function PostPage() {
         m="10vh 0 0"
       >
         <k.h2 fontSize="1.2rem" fontWeight="bold">
-          声モデルを投稿
+          声モデルを作成
         </k.h2>
 
         <k.div>
@@ -326,7 +326,7 @@ export default function PostPage() {
           </k.label>
         </k.div>
         <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">RVCモデル</k.span>
+          <k.span fontSize="0.85rem">音声ファイル</k.span>
           <k.label
             cursor="pointer"
             width="fit-content"
@@ -337,12 +337,12 @@ export default function PostPage() {
           >
             <k.input
               type="file"
-              accept=".pth"
+              accept="audio/*"
               display="none"
-              onChange={handleChangeThumbnail("rvcModelUrl", "rvc_models/")}
+              onChange={handleChangeThumbnail("audioUrl", "train_voices/")}
             />
-            {formState.rvcModelUrl.length > 0 ? (
-              <k.div>{formState.rvcModelUrl}</k.div>
+            {formState.audioUrl.length > 0 ? (
+              <k.div>{formState.audioUrl}</k.div>
             ) : (
               <k.div
                 p="5px 16px"
@@ -350,7 +350,7 @@ export default function PostPage() {
                 borderRadius="8px"
                 bg="linear-gradient(175deg, rgba(9,40,54,1) 0%, rgba(9,34,52,1) 100%)"
               >
-                RVCモデルをアップロード
+                音声をアップロード
               </k.div>
             )}
           </k.label>
