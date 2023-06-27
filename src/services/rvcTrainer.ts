@@ -1,7 +1,14 @@
 import { uploadFile } from "@/utils/storage";
+import prisma from "@/utils/prisma";
 
 const API_KEY = process.env.RUNPOD_API_KEY || "";
 const ENDPOINT = "https://api.runpod.ai/v2/vvt5j6dmepozdn";
+
+export const JOB_STATUS = {
+  IN_QUEUE: { type: 1, label: "IN_QUEUE" },
+  IN_PROGRESS: { type: 2, label: "IN_PROGRESS" },
+  FINISH: { type: 3, label: "COMPLETED" },
+} as const;
 
 export async function createTrainerConfig(voiceKey: string) {
   const configBuf = Buffer.from(
@@ -50,7 +57,7 @@ export async function createTrainerConfig(voiceKey: string) {
 }
 
 export async function requestTraining(
-  voiceKey: string,
+  voiceModelId: string,
   voiceUrl: string,
   configUrl: string
 ) {
@@ -62,7 +69,7 @@ export async function requestTraining(
     },
     body: JSON.stringify({
       input: {
-        voice_key: voiceKey,
+        voice_key: voiceModelId,
         voice_url: voiceUrl,
         config_url: configUrl,
       },
@@ -70,6 +77,17 @@ export async function requestTraining(
   });
 
   const json: { id: string; status: string } = await response.json();
+
+  await prisma.voiceModelTrainJob.create({
+    data: {
+      voiceModelId,
+      jobId: json.id,
+      audioUrl: voiceUrl,
+      configUrl,
+      status: JOB_STATUS.IN_QUEUE.type,
+    },
+  });
+
   return json;
 }
 

@@ -158,7 +158,10 @@ model Report {
 
 model VoiceModelTrainJob {
   id String @id @default(cuid())
-  description String
+  jobId String
+  audioUrl String
+  configUrl String
+  status Int @default(1) // in queue
   voiceModelId String
   voiceModel VoiceModel @relation(fields: [voiceModelId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
