@@ -1,12 +1,21 @@
 import { styled, k } from "@kuma-ui/core";
-import { Header, BottomNav } from "@/components";
+import { BottomNav } from "@/components";
 import React from "react";
+import Head from "next/head";
 
 export const Layout: React.FC<{
   children: React.ReactNode;
-}> = ({ children }) => {
+  title?: string;
+}> = ({
+  children,
+  title = "VOICE CHAIN | NFTとAIであなたの声を資産にする",
+}) => {
   return (
     <Wrapper>
+      <Head>
+        <title>{title}</title>
+      </Head>
+
       <k.main height="100vh">{children}</k.main>
       <BottomNav />
     </Wrapper>

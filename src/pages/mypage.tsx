@@ -2,7 +2,7 @@
 import { css, k, styled } from "@kuma-ui/core";
 import { Layout } from "@/components";
 import React from "react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import useSWR from "swr";
 import {
   Music,
@@ -100,7 +100,23 @@ export default function IndexPage() {
               {session?.user?.name}
             </k.h1>
           </k.div>
-          <k.div position="absolute" right="24px" bottom="16px">
+          <k.div
+            position="absolute"
+            right="24px"
+            bottom="16px"
+            display="flex"
+            flexDir="column"
+            gap="12px"
+          >
+            <k.button
+              onClick={() => signOut()}
+              fontSize="0.85rem"
+              display="flex"
+              gap="4px"
+              color="#35d0ac"
+            >
+              ログアウト
+            </k.button>
             <k.a
               href="https://forms.gle/qCef4L3zN1fWUvPMA"
               target="_blank"

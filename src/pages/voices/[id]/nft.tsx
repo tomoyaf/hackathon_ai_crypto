@@ -16,15 +16,15 @@ type VoiceModelWithMusics = VoiceModel & {
 export default function IndexPage() {
   const router = useRouter();
   const { createAuthSignature } = useMetaMask();
-  const { id } = router.query;
+  const { id: voiceId } = router.query;
   const { data } = useSWR<VoiceModelWithMusics>(
-    () => (id ? `/api/voiceModels/${id}` : null),
+    () => (voiceId ? `/api/voiceModels/nft/${voiceId}` : null),
     (url: string) => fetch(url).then((res) => res.json())
   );
 
   const _downloadModel = async () => {
     const { signature, address } = await createAuthSignature();
-    const res = await fetch(`/api/voiceModels/${id}/download`, {
+    const res = await fetch(`/api/voiceModels/${voiceId}/download`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

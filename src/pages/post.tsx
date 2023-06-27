@@ -12,8 +12,16 @@ import {
   MusicalNoteIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
 
 export default function PostPage() {
+  const { status } = useSession();
+  React.useEffect(() => {
+    if (status === "unauthenticated") {
+      signIn();
+    }
+  }, [status]);
+
   const { connectToMetaMask } = useMetaMask();
   const readOnlyContract = contractUtils.connectReadOnlyContract();
   const [formState, setFormState] = React.useState<{
@@ -381,6 +389,19 @@ export default function PostPage() {
           登録{addItemPrice ? ` (${addItemPrice} MATIC)` : ""}
         </k.button>
       </k.form>
+
+      <k.div mt="16px">
+        <k.p fontSize="0.85rem" opacity="0.7">
+          現在VOICE CHAINはβテスト中です。
+        </k.p>
+        <k.p fontSize="0.85rem" opacity="0.7">
+          Polygon Mumbai
+          Testnetに接続した上でMetaMaskを設定していただく必要があります。
+        </k.p>
+        <k.p fontSize="0.85rem" opacity="0.7">
+          正式版リリース時に
+        </k.p>
+      </k.div>
 
       <k.div
         width="500px"

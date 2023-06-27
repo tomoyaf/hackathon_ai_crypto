@@ -33,7 +33,7 @@ export const IntroCard: React.FC<IntroCardProps> = (props) => {
           }}
         >
           <k.h1 fontSize="2rem" fontWeight="900">
-            VOICE CHAINへようこそ！
+            VOICE CHAIN（β）へようこそ！
           </k.h1>
 
           <k.div fontSize="0.85rem" lineHeight="2rem" mt="6px">
@@ -42,6 +42,9 @@ export const IntroCard: React.FC<IntroCardProps> = (props) => {
           </k.div>
           <k.div fontSize="0.85rem" lineHeight="2rem">
             クリエイターは自分の好きな声を法律を守りながら利用することができます。
+          </k.div>
+          <k.div fontSize="0.85rem" lineHeight="2rem">
+            （β版としてテストネットワークで運用しております。）
           </k.div>
           <k.div
             fontSize="0.85rem"
