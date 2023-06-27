@@ -391,7 +391,7 @@ export default function PostPage() {
         </k.button>
       </k.form>
 
-      <k.div mt="16px">
+      <k.div mt="16px" width="500px" maxWidth="90vw">
         <k.p fontSize="0.85rem" opacity="0.7">
           現在VOICE CHAINはβテスト中です。
         </k.p>

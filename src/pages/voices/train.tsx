@@ -11,6 +11,7 @@ import {
   ArrowTopRightOnSquareIcon,
   MicrophoneIcon,
   MusicalNoteIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
@@ -182,23 +183,9 @@ export default function PostPage() {
           声モデルを作成
         </k.h2>
 
-        <k.div>
-          <k.p fontSize="0.85rem" opacity="0.7">
-            声モデルの作成にお困りですか？完全無料で声モデル作成代行サービスを承っておりますので、お気軽に以下のフォームからご依頼ください！
-          </k.p>
-          <k.a
-            href="https://forms.gle/jg793nZZPaFi6oT87"
-            target="_blank"
-            rel="noopener noreferrer"
-            fontSize="0.85rem"
-            display="flex"
-            gap="4px"
-            color="#35d0ac"
-          >
-            声モデル作成代行サービス依頼フォーム
-            <ArrowTopRightOnSquareIcon width="15px" />
-          </k.a>
-        </k.div>
+        <k.p fontSize="0.85rem" opacity="0.7">
+          サービス側で声モデルを作成します。声モデルの作成には1時間程度かかる可能性がありますので、しばらくお待ちください。
+        </k.p>
 
         <k.div display="flex" flexDir="column" gap="4px">
           <k.span fontSize="0.85rem">タイトル</k.span>
@@ -391,7 +378,7 @@ export default function PostPage() {
         </k.button>
       </k.form>
 
-      <k.div mt="16px">
+      <k.div mt="16px" width="500px" maxWidth="90vw">
         <k.p fontSize="0.85rem" opacity="0.7">
           現在VOICE CHAINはβテスト中です。
         </k.p>
@@ -429,7 +416,7 @@ export default function PostPage() {
           曲を投稿する <MusicalNoteIcon width="18px" />
         </Link>
         <Link
-          href="/voices/train"
+          href="/post"
           style={{
             display: "flex",
             justifyItems: "center",
@@ -441,7 +428,7 @@ export default function PostPage() {
             padding: "4px 24px",
           }}
         >
-          声モデルを作成する <MicrophoneIcon width="18px" />
+          声モデルを投稿する <PlusIcon width="18px" />
         </Link>
       </k.div>
     </k.div>
