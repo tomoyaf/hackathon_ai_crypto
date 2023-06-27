@@ -27,51 +27,53 @@ export const Onboard: React.FC<OnboardProps> = (props) => {
       bottom="0"
       left="0"
       display="flex"
+      flexDir="column"
       justify="center"
       alignItems="center"
       width="100vw"
-      p="100px"
-      height="100px"
+      p={["0 60px 0 12px", "100px"]}
+      height={["160px", "120px"]}
       bg="#000000e0"
       color="white"
     >
-      <k.a
-        href="https://tomoyaf.notion.site/f3293a74f8c04258b77e31aebbb6b5cc?pvs=4"
-        target="_blank"
-        rel="noopener noreferrer"
-        fontSize="0.85rem"
-        display="flex"
-        gap="4px"
-        color="#35d0ac"
-      >
-        利用規約
-      </k.a>
-      と
-      <k.a
-        href="https://tomoyaf.notion.site/b1a2a24573414bb19693b33c2806e3c7?pvs=4"
-        target="_blank"
-        rel="noopener noreferrer"
-        fontSize="0.85rem"
-        display="flex"
-        gap="4px"
-        color="#35d0ac"
-      >
-        プライバシーポリシー
-      </k.a>
-      に同意していただけた場合のみ、本サービスをご利用していただくことができます。
-      <k.div
-        position="absolute"
-        right="24px"
-        top="24px"
-        borderRadius="9999px"
-        p="12px"
-        cursor="pointer"
-        transition="background ease 220ms"
-        _hover={{ bg: "#333" }}
-        onClick={close}
-      >
-        <XMarkIcon width="22px" />
+      <k.div>
+        VOICE CHAINは現在βテスト中であり、テストネットで稼働しています。
       </k.div>
+      <k.span>
+        <k.a
+          href="https://tomoyaf.notion.site/f3293a74f8c04258b77e31aebbb6b5cc?pvs=4"
+          target="_blank"
+          rel="noopener noreferrer"
+          fontSize="0.85rem"
+          color="#35d0ac"
+        >
+          利用規約
+        </k.a>
+        と
+        <k.a
+          href="https://tomoyaf.notion.site/b1a2a24573414bb19693b33c2806e3c7?pvs=4"
+          target="_blank"
+          rel="noopener noreferrer"
+          fontSize="0.85rem"
+          color="#35d0ac"
+        >
+          プライバシーポリシー
+        </k.a>
+        に同意していただけた場合のみ、本サービスをご利用していただくことができます。
+        <k.div
+          position="absolute"
+          right="24px"
+          top="24px"
+          borderRadius="9999px"
+          p="12px"
+          cursor="pointer"
+          transition="background ease 220ms"
+          _hover={{ bg: "#333" }}
+          onClick={close}
+        >
+          <XMarkIcon width="22px" />
+        </k.div>
+      </k.span>
     </k.div>
   );
 };
