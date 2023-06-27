@@ -67,7 +67,7 @@ def upload_model(key: str):
     bucket = storage_client.get_bucket("ai_crypto")
     blob = bucket.blob(f"models/{key}.pth")
     blob.upload_from_filename(
-        f"/workspace/rvc-webui/models/training/models/{key}/checkpoint/{key}-30.pth"
+        f"/workspace/rvc-webui/models/training/models/{key}/checkpoints/{key}-30.pth"
     )
 
     return blob.public_url
