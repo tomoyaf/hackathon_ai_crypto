@@ -8,7 +8,7 @@ def handler(event):
     core.audio_to_corpus(inputs["voice_url"], inputs["voice_key"])
     core.train_model(inputs["config_url"], inputs["voice_key"])
     model_url = core.upload_model(inputs["voice_key"])
-    return {"model_url": model_url}
+    return {"model_url": model_url, "voice_key": inputs["voice_key"]}
 
 
 runpod.serverless.start({"handler": handler})
