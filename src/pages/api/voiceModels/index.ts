@@ -95,6 +95,7 @@ export default async function handler(
           description,
           image: thumbnailUrl,
           voiceId: +voiceId,
+          voiceModelId: savedVoiceModel.id,
         });
 
         // コントラクトに承認をリクエスト

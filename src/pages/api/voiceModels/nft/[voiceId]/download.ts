@@ -7,11 +7,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { address, signature } = req.body;
-  const { id } = req.query;
+  const { voiceId } = req.query;
 
   if (req.method !== "POST") return;
 
-  if (!address || !signature || id == null) {
+  if (!address || !signature || voiceId == null) {
     res.status(400).json({ message: "不正なリクエストです。" });
     return;
   }
@@ -23,7 +23,7 @@ export default async function handler(
   }
 
   const voiceModel = await prisma.voiceModel.findUnique({
-    where: { id: id.toString() },
+    where: { voiceId: +voiceId },
   });
   if (!voiceModel) {
     res.status(404).json({ message: "VoiceModelが見つかりませんでした。" });

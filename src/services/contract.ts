@@ -11,6 +11,7 @@ export async function createTokenUrl(metadata: {
   description: string;
   image: string;
   voiceId: number;
+  voiceModelId: string;
 }) {
   const fileName = `metadata/${randomUUID()}.json`;
   const metadataBuf = Buffer.from(

@@ -1,17 +1,12 @@
 import { k } from "@kuma-ui/core";
 import { Layout } from "@/components";
-import { useFeedItems } from "@/hooks/useFeedItems";
 import { useMetaMask } from "@/hooks/useContract";
 import * as contractUtils from "@/utils/contractFrontend";
 import React from "react";
 import { toast } from "react-hot-toast";
 import { utils } from "ethers";
 import { useRouter } from "next/navigation";
-import {
-  ArrowTopRightOnSquareIcon,
-  MicrophoneIcon,
-  MusicalNoteIcon,
-} from "@heroicons/react/24/outline";
+import { MicrophoneIcon, MusicalNoteIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 
@@ -179,10 +174,11 @@ export default function PostPage() {
         m="10vh 0 0"
       >
         <k.h2 fontSize="1.2rem" fontWeight="bold">
-          声モデルを投稿
+          RVCモデルでの投稿
         </k.h2>
 
-        <k.div>
+        {/* 自動生成機能を実装したからいらないかも */}
+        {/* <k.div>
           <k.p fontSize="0.85rem" opacity="0.7">
             声モデルの作成にお困りですか？完全無料で声モデル作成代行サービスを承っておりますので、お気軽に以下のフォームからご依頼ください！
           </k.p>
@@ -198,7 +194,7 @@ export default function PostPage() {
             声モデル作成代行サービス依頼フォーム
             <ArrowTopRightOnSquareIcon width="15px" />
           </k.a>
-        </k.div>
+        </k.div> */}
 
         <k.div display="flex" flexDir="column" gap="4px">
           <k.span fontSize="0.85rem">タイトル</k.span>

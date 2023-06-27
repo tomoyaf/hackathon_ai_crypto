@@ -60,6 +60,7 @@ export default async function handler(
           description: voiceModel.description,
           image: voiceModel?.thumbnailUrl,
           voiceId: voiceModel.voiceId,
+          voiceModelId: voiceModel.id,
         });
 
         await contractService.acceptAddMintableItem(
@@ -73,4 +74,6 @@ export default async function handler(
       await setTimeout(1000);
     }
   }
+
+  res.status(200).json({ message: "ok" });
 }

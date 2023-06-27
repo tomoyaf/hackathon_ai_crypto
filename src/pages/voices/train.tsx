@@ -179,15 +179,15 @@ export default function PostPage() {
         m="10vh 0 0"
       >
         <k.h2 fontSize="1.2rem" fontWeight="bold">
-          声モデルを作成
+          声モデルの作成
         </k.h2>
 
         <k.div>
           <k.p fontSize="0.85rem" opacity="0.7">
-            声モデルの作成にお困りですか？完全無料で声モデル作成代行サービスを承っておりますので、お気軽に以下のフォームからご依頼ください！
+            自身の声の音声ファイルを作成する場合は、なるべく静かな場所で、以下の台本をハッキリとした声で読み上げてください。
           </k.p>
           <k.a
-            href="https://forms.gle/jg793nZZPaFi6oT87"
+            href="https://raw.githubusercontent.com/mmorise/ita-corpus/main/emotion_%E6%9C%97%E8%AA%AD%E8%80%85%E7%94%A8.pdf"
             target="_blank"
             rel="noopener noreferrer"
             fontSize="0.85rem"
@@ -195,7 +195,7 @@ export default function PostPage() {
             gap="4px"
             color="#35d0ac"
           >
-            声モデル作成代行サービス依頼フォーム
+            ITAコーパス台本のダウンロード
             <ArrowTopRightOnSquareIcon width="15px" />
           </k.a>
         </k.div>
@@ -337,7 +337,7 @@ export default function PostPage() {
           >
             <k.input
               type="file"
-              accept="audio/*"
+              accept=".mp3,.wav"
               display="none"
               onChange={handleChangeThumbnail("audioUrl", "train_voices/")}
             />
@@ -429,7 +429,7 @@ export default function PostPage() {
           曲を投稿する <MusicalNoteIcon width="18px" />
         </Link>
         <Link
-          href="/voices/train"
+          href="/post"
           style={{
             display: "flex",
             justifyItems: "center",
@@ -441,7 +441,7 @@ export default function PostPage() {
             padding: "4px 24px",
           }}
         >
-          声モデルを作成する <MicrophoneIcon width="18px" />
+          RVCモデルを投稿する <MicrophoneIcon width="18px" />
         </Link>
       </k.div>
     </k.div>
