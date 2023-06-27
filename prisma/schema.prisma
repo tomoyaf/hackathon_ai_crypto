@@ -84,7 +84,7 @@ model VoiceModel {
   id      String    @id @default(cuid())
   url     String
   userId  String
-  voiceId Int
+  voiceId Int @unique
   title String
   thumbnailUrl String
   description String

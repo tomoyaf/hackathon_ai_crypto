@@ -82,7 +82,7 @@ export const BottomNav: React.FC<BottomNavProps> = () => {
       {currentMusic && (
         <FloatingBar>
           <img
-            src="https://i.scdn.co/image/ab67616d00001e02821db8ce6379c713a5a3a4b5"
+            src={currentMusic.thumbnailUrl}
             alt=""
             className={css({
               borderRadius: "4px",

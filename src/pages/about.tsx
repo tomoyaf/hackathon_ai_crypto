@@ -18,7 +18,7 @@ export default function IndexPage() {
       >
         <Link href="/">
           <k.p fontSize="1.2rem" fontWeight="900">
-            VOICE CHAIN
+            VOICE CHAIN（β）
           </k.p>
         </Link>
 

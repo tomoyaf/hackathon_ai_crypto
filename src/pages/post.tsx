@@ -392,7 +392,14 @@ export default function PostPage() {
 
       <k.div mt="16px">
         <k.p fontSize="0.85rem" opacity="0.7">
-          Mumbai testnetに接続した上でMetaMaskを設定していただく必要があります。
+          現在VOICE CHAINはβテスト中です。
+        </k.p>
+        <k.p fontSize="0.85rem" opacity="0.7">
+          Polygon Mumbai
+          Testnetに接続した上でMetaMaskを設定していただく必要があります。
+        </k.p>
+        <k.p fontSize="0.85rem" opacity="0.7">
+          正式版リリース時に
         </k.p>
       </k.div>
 
