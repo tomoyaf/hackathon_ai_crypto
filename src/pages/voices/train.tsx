@@ -397,7 +397,7 @@ export default function PostPage() {
           Testnetに接続した上でMetaMaskを設定していただく必要があります。
         </k.p>
         <k.p fontSize="0.85rem" opacity="0.7">
-          正式版リリース時に
+          正式版リリース時にネットワークの切り替えが発生する可能性がありますのでご了承ください。
         </k.p>
       </k.div>
 
