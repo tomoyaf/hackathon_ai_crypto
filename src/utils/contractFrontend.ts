@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 // smart-contract フォルダ内でnpm run compileを実行してください
-import compiledInfo from "../../smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
-import { VoiceToken } from "../../smart-contract/typechain-types";
+import compiledInfo from "@voicechain/smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
+import { VoiceToken } from "@voicechain/smart-contract/typechain-types";
 
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
 
