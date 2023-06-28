@@ -30,7 +30,7 @@ export default async function handler(
     return;
   }
 
-  const ownedCount = await ownedVoiceCount(address, voiceModel.voiceId);
+  const ownedCount = await ownedVoiceCount(address, +voiceId);
   if (ownedCount < 1) {
     res.status(400).json({ message: "所有してません" });
     return;

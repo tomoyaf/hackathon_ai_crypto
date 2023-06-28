@@ -54,7 +54,8 @@ export default async function handler(
           },
         });
 
-        if (!voiceModel) throw new Error("voiceModel not found");
+        if (!voiceModel || !voiceModel.voiceId)
+          throw new Error("voiceModel not found");
         const tokenURL = await contractService.createTokenUrl({
           name: voiceModel.title,
           description: voiceModel.description,

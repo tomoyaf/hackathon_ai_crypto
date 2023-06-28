@@ -13,7 +13,7 @@
     "deploy:prod": "hardhat run scripts/prod/deploy.ts --network mumbai",
     "attach:prod": "hardhat run scripts/prod/attach.ts --network mumbai",
     "upgrade:prod": "hardhat run scripts/prod/upgrade.ts --network mumbai",
-    "postinstall": "hardhat clean && hardhat compile"
+    "postinstall": "hardhat compile"
   },
   "author": "",
   "license": "ISC",
