@@ -2,9 +2,17 @@ import { randomUUID } from "node:crypto";
 import { uploadFile } from "../utils/storage";
 import { ethers } from "ethers";
 import prisma from "@/utils/prisma";
-// smart-contract フォルダ内でnpm run compileを実行してください
 import compiledInfo from "@voicechain/smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
 import { VoiceToken } from "@voicechain/smart-contract/typechain-types";
+
+export const TRANSACTION_TYPE = {
+  ADD_MINTABLE_ITEM: 1,
+} as const;
+
+export const TRANSACTION_STATUS = {
+  PENDING: 1,
+  SUCCESS: 2,
+};
 
 export async function createTokenUrl(metadata: {
   name: string;
@@ -82,6 +90,68 @@ export async function ownedVoiceCount(adress: string, voiceId: number) {
   const { contract } = await connectContract();
   const ownedCount = await contract.ownedVoiceCount(adress, voiceId);
   return ownedCount.toNumber();
+}
+
+export async function addPendingTransaction(
+  transactionHash: string,
+  actionUserAddress: string,
+  type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE],
+  options?: { voiceModelId?: string }
+) {
+  await prisma.contractTransaction.create({
+    data: {
+      transactionHash,
+      actionUserAddress,
+      type,
+      status: TRANSACTION_STATUS.PENDING,
+      voiceModelId: options?.voiceModelId,
+    },
+  });
+}
+
+export async function checkTransactionSuccess(txHash: string) {
+  const { provider } = await connectContract();
+  const tx = await provider.getTransaction(txHash);
+  return tx.confirmations >= 1;
+}
+
+export async function getTransactionReceipt(txHash: string) {
+  const { provider } = await connectContract();
+  const receipt = await provider.getTransactionReceipt(txHash);
+  return receipt;
+}
+
+export async function extractEventLogs(logs: ethers.providers.Log[]) {
+  const { contract } = await connectContract();
+  const parsedLogs = logs
+    .map((log) => {
+      try {
+        return contract.interface.parseLog(log);
+      } catch (error) {
+        console.log("このエラーはパーズ失敗なので想定範囲内");
+        console.log(error);
+      }
+    })
+    .filter(
+      (parsedLog): parsedLog is ethers.utils.LogDescription => parsedLog != null
+    );
+  return parsedLogs;
+}
+
+export async function extractVoiceIdFromTxHash(
+  txHash: string
+): Promise<number | undefined> {
+  const { provider } = await connectContract();
+  const receipt = await provider.getTransactionReceipt(txHash);
+  if (!receipt) return;
+
+  const events = await extractEventLogs(receipt.logs);
+  const parsed = events.find((e) => e.name === "SuccessRequestAddItem");
+  if (parsed?.name !== "SuccessRequestAddItem") return;
+  const voiceId = parsed.args?.[1];
+
+  // BigNumberをnumberに変換する
+  return voiceId ? +voiceId.toString() : undefined;
 }
 
 export async function getAuthKey(address: string) {

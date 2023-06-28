@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-// smart-contract フォルダ内でnpm run compileを実行してください
 import compiledInfo from "@voicechain/smart-contract/artifacts/contracts/VoiceToken.sol/VoiceToken.json";
 import { VoiceToken } from "@voicechain/smart-contract/typechain-types";
 
@@ -56,20 +55,32 @@ export function changeProvider(
   return contract.connect(signerOrProvider) as VoiceTokenType;
 }
 
-export function extractVoiceIdFromTxResult(
-  receipt: ethers.ContractReceipt
-): number | undefined {
-  const voiceId = receipt.events?.find(
-    (e) => e.event === "SuccessRequestAddItem"
-  )?.args?.[1];
-
-  // BigNumberをnumberに変換する
-  return voiceId ? +voiceId.toString() : undefined;
+export function extractEventLogs(
+  txResult: ethers.providers.TransactionReceipt
+) {
+  const contract = connectReadOnlyContract();
+  const parsedLogs = txResult.logs
+    .map((log) => {
+      try {
+        return contract.interface.parseLog(log);
+      } catch (error) {
+        console.log("このエラーはパーズ失敗なので想定範囲内");
+        console.log(error);
+      }
+    })
+    .filter(
+      (parsedLog): parsedLog is ethers.utils.LogDescription => parsedLog != null
+    );
+  return parsedLogs;
 }
 
-export function extractMintedArgsFromTxResult(receipt: ethers.ContractReceipt) {
+export function extractMintedArgsFromTxResult(
+  txResult: ethers.providers.TransactionReceipt
+) {
+  const events = extractEventLogs(txResult);
+
   const [tokenId, voiceId] =
-    receipt.events?.find((e) => e.event === "SuccessMinted")?.args ?? [];
+    events?.find((e) => e.name === "SuccessMinted")?.args ?? [];
 
   // BigNumberをnumberに変換する
   return {

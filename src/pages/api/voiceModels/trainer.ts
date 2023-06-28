@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import prisma from "@/utils/prisma";
-import * as trainerService from "@/services/rvcTrainer";
+import * as contractService from "@/services/contract";
+import { VOICE_MODEL_SOURCE_TYPE } from "@/constants";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,16 +18,24 @@ export default async function handler(
     return;
   }
 
-  const { title, description, thumbnailUrl, audioUrl, voiceId, rule } =
-    req.body;
+  const {
+    title,
+    description,
+    thumbnailUrl,
+    audioUrl,
+    rule,
+    transactionHash,
+    actionUserAddress,
+  } = req.body;
 
   if (
     title == null ||
     description == null ||
     thumbnailUrl == null ||
     audioUrl == null ||
-    voiceId == null ||
-    rule == null
+    rule == null ||
+    transactionHash == null ||
+    actionUserAddress == null
   ) {
     res.status(400).json({
       message: "不正なreq.body",
@@ -35,7 +44,6 @@ export default async function handler(
         description,
         thumbnailUrl,
         audioUrl,
-        voiceId,
         rule,
       },
     });
@@ -62,19 +70,18 @@ export default async function handler(
       description,
       thumbnailUrl,
       userId: user.id,
-      voiceId: +voiceId,
       rule,
+      audioUrl,
+      sourceType: VOICE_MODEL_SOURCE_TYPE.GENERATED,
     },
   });
 
-  const configFile = await trainerService.createTrainerConfig(
-    savedVoiceModel.id
-  );
-
-  await trainerService.requestTraining(
-    savedVoiceModel.id,
-    audioUrl,
-    configFile.publicUrl()
+  // transactionが承認されてから学習を開始する
+  await contractService.addPendingTransaction(
+    transactionHash,
+    actionUserAddress,
+    contractService.TRANSACTION_TYPE.ADD_MINTABLE_ITEM,
+    { voiceModelId: savedVoiceModel.id }
   );
 
   res.status(200).json({ savedVoiceModel });
