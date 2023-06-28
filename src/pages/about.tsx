@@ -5,7 +5,12 @@ import { Link as ScrollLink } from "react-scroll";
 
 export default function IndexPage() {
   return (
-    <k.div width="100%">
+    <k.div
+      width="100%"
+      height="100vh"
+      overflow="scroll"
+      style={{ scrollSnapType: "y mandatory" }}
+    >
       <k.nav
         display="flex"
         justify="center"
@@ -24,7 +29,7 @@ export default function IndexPage() {
 
         <k.ul
           flexGrow="1"
-          display="flex"
+          display={["none", "flex"]}
           justify="end"
           alignItems="center"
           height="86px"
@@ -81,15 +86,18 @@ export default function IndexPage() {
         width="100vw"
         pt="86px"
         display="flex"
+        flexDir={["column", "row"]}
         bg="linear-gradient(175deg, #ff9dbb 0%, #fc6992 100%)"
+        style={{ scrollSnapAlign: "center" }}
       >
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="calc(100vh - 86px)"
-          justify="center"
+          width={["100%", "50%"]}
+          pl={["28px", "120px"]}
+          pr={["28px", "0"]}
+          height={["calc(60vh - 86px)", "calc(100vh - 86px)"]}
+          justify={["flex-end", "center"]}
           alignItems="center"
           gap="28px"
         >
@@ -103,52 +111,10 @@ export default function IndexPage() {
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="calc(100vh - 86px)"
-          justify="center"
-          alignItems="center"
-          gap="28px"
-        >
-          <Link
-            href="/"
-            style={{
-              fontWeight: 900,
-              padding: "12px 28px",
-              border: "2px solid #000",
-              transition: "opacity 220ms ease",
-            }}
-            className="hover:opacity-60"
-          >
-            Get Started
-          </Link>
-        </k.div>
-      </k.div>
-
-      <k.div width="100vw" display="flex" id="ainft">
-        <k.div
-          display="flex"
-          flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
-          justify="center"
-          alignItems="center"
-          gap="28px"
-        >
-          <k.div fontSize="3rem" fontWeight="900">
-            AI + NFT = ∞
-          </k.div>
-          <k.div fontSize="1.5rem" fontWeight="900" pb="10vh">
-            NFTとAIの無限の可能性を体験しましょう
-          </k.div>
-        </k.div>
-        <k.div
-          display="flex"
-          flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
+          width={["100%", "50%"]}
+          pl={["36px", "120px"]}
+          pr={["36px", "0"]}
+          height={["40vh", "calc(100vh - 86px)"]}
           justify="center"
           alignItems="center"
           gap="28px"
@@ -171,16 +137,70 @@ export default function IndexPage() {
       <k.div
         width="100vw"
         display="flex"
-        id="voice"
-        bg="linear-gradient(175deg, #59e3c3 0%, #34c5a2 100%)"
+        id="ainft"
+        flexDir={["column", "row"]}
+        style={{ scrollSnapAlign: "center" }}
       >
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
+          width={["100%", "50%"]}
+          pl={["36px", "120px"]}
+          pr={["36px", "0"]}
+          height={["60vh", "100vh"]}
+          justify={["flex-end", "center"]}
+          alignItems="center"
+          gap="28px"
+        >
+          <k.div fontSize="3rem" fontWeight="900">
+            AI + NFT = ∞
+          </k.div>
+          <k.div fontSize="1.5rem" fontWeight="900" pb="10vh">
+            NFTとAIの無限の可能性を体験しましょう
+          </k.div>
+        </k.div>
+        <k.div
+          display="flex"
+          flexDir="column"
+          width={["100%", "50%"]}
+          pl={["24px", "120px"]}
+          pr={["24px", "0"]}
+          height={["40vh", "100vh"]}
           justify="center"
+          alignItems="center"
+          gap="28px"
+        >
+          <Link
+            href="/"
+            style={{
+              fontWeight: 900,
+              padding: "12px 28px",
+              border: "2px solid #000",
+              transition: "opacity 220ms ease",
+            }}
+            className="hover:opacity-60"
+          >
+            Get Started
+          </Link>
+        </k.div>
+      </k.div>
+
+      <k.div
+        width="100vw"
+        display="flex"
+        flexDir={["column", "row"]}
+        id="voice"
+        bg="linear-gradient(175deg, #59e3c3 0%, #34c5a2 100%)"
+        style={{ scrollSnapAlign: "center" }}
+      >
+        <k.div
+          display="flex"
+          flexDir="column"
+          width={["100%", "50%"]}
+          pl={["36px", "120px"]}
+          pr={["36px", "0"]}
+          height={["60vh", "100vh"]}
+          justify={["flex-end", "center"]}
           alignItems="center"
           gap="28px"
         >
@@ -196,52 +216,10 @@ export default function IndexPage() {
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
-          justify="center"
-          alignItems="center"
-          gap="28px"
-        >
-          <Link
-            href="/"
-            style={{
-              fontWeight: 900,
-              padding: "12px 28px",
-              border: "2px solid #000",
-              transition: "opacity 220ms ease",
-            }}
-            className="hover:opacity-60"
-          >
-            Get Started
-          </Link>
-        </k.div>
-      </k.div>
-
-      <k.div width="100vw" display="flex" id="music">
-        <k.div
-          display="flex"
-          flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
-          justify="center"
-          alignItems="center"
-          gap="28px"
-        >
-          <k.div fontSize="3rem" fontWeight="900">
-            FOR MUSIC CREATORS
-          </k.div>
-          <k.div fontSize="1.5rem" fontWeight="900" pb="10vh">
-            自由に声を使える世界へ
-          </k.div>
-        </k.div>
-        <k.div
-          display="flex"
-          flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
+          width={["100%", "50%"]}
+          pl={["24px", "120px"]}
+          pr={["24px", "0"]}
+          height={["40vh", "100vh"]}
           justify="center"
           alignItems="center"
           gap="28px"
@@ -264,32 +242,35 @@ export default function IndexPage() {
       <k.div
         width="100vw"
         display="flex"
-        id="lover"
-        bg="linear-gradient(175deg, #6893ff 0%, #3368e6 100%)"
+        flexDir={["column", "row"]}
+        id="music"
+        style={{ scrollSnapAlign: "center" }}
       >
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
-          justify="center"
+          width={["100%", "50%"]}
+          pl={["36px", "120px"]}
+          pr={["36px", "0"]}
+          height={["60vh", "100vh"]}
+          justify={["flex-end", "center"]}
           alignItems="center"
           gap="28px"
         >
           <k.div fontSize="3rem" fontWeight="900">
-            FOR MUSIC LOVERS
+            FOR MUSIC CREATORS
           </k.div>
           <k.div fontSize="1.5rem" fontWeight="900" pb="10vh">
-            未来の音楽体験がここに
+            自由に声を使える世界へ
           </k.div>
         </k.div>
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
+          width={["100%", "50%"]}
+          pl={["24px", "120px"]}
+          pr={["24px", "0"]}
+          height={["40vh", "100vh"]}
           justify="center"
           alignItems="center"
           gap="28px"
@@ -308,14 +289,74 @@ export default function IndexPage() {
           </Link>
         </k.div>
       </k.div>
-      <k.div width="100vw" display="flex" id="contact">
+
+      <k.div
+        width="100vw"
+        display="flex"
+        flexDir={["column", "row"]}
+        id="lover"
+        bg="linear-gradient(175deg, #6893ff 0%, #3368e6 100%)"
+        style={{ scrollSnapAlign: "center" }}
+      >
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
+          width={["100%", "50%"]}
+          pl={["36px", "120px"]}
+          pr={["36px", "0"]}
+          height={["60vh", "100vh"]}
+          justify={["flex-end", "center"]}
+          alignItems="center"
+          gap="28px"
+        >
+          <k.div fontSize="3rem" fontWeight="900">
+            FOR MUSIC LOVERS
+          </k.div>
+          <k.div fontSize="1.5rem" fontWeight="900" pb="10vh">
+            未来の音楽体験がここに
+          </k.div>
+        </k.div>
+        <k.div
+          display="flex"
+          flexDir="column"
+          width={["100%", "50%"]}
+          pl={["24px", "120px"]}
+          pr={["24px", "0"]}
+          height={["40vh", "100vh"]}
           justify="center"
+          alignItems="center"
+          gap="28px"
+        >
+          <Link
+            href="/"
+            style={{
+              fontWeight: 900,
+              padding: "12px 28px",
+              border: "2px solid #000",
+              transition: "opacity 220ms ease",
+            }}
+            className="hover:opacity-60"
+          >
+            Get Started
+          </Link>
+        </k.div>
+      </k.div>
+
+      <k.div
+        width="100vw"
+        display="flex"
+        flexDir={["column", "row"]}
+        id="contact"
+        style={{ scrollSnapAlign: "center" }}
+      >
+        <k.div
+          display="flex"
+          flexDir="column"
+          width={["100%", "50%"]}
+          pl={["36px", "120px"]}
+          pr={["36px", "0"]}
+          height={["60vh", "100vh"]}
+          justify={["flex-end", "center"]}
           alignItems="center"
           gap="28px"
         >
@@ -329,9 +370,10 @@ export default function IndexPage() {
         <k.div
           display="flex"
           flexDir="column"
-          width="50%"
-          pl="120px"
-          height="100vh"
+          width={["100%", "50%"]}
+          pl={["24px", "120px"]}
+          pr={["24px", "0"]}
+          height={["40vh", "100vh"]}
           justify="center"
           alignItems="center"
           gap="28px"
