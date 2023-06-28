@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import * as contractService from "@/services/contract";
+import { VOICE_MODEL_SOURCE_TYPE } from "@/constants";
 
 export default async function handler(
   req: NextApiRequest,
@@ -38,16 +39,24 @@ export default async function handler(
           return;
         }
 
-        const { title, description, thumbnailUrl, rvcModelUrl, voiceId, rule } =
-          req.body;
+        const {
+          title,
+          description,
+          thumbnailUrl,
+          rvcModelUrl,
+          rule,
+          transactionHash,
+          actionUserAddress,
+        } = req.body;
 
         if (
           title == null ||
           description == null ||
           thumbnailUrl == null ||
           rvcModelUrl == null ||
-          voiceId == null ||
-          rule == null
+          rule == null ||
+          transactionHash == null ||
+          actionUserAddress == null
         ) {
           res.status(400).json({
             message: "不正なreq.body",
@@ -56,7 +65,6 @@ export default async function handler(
               description,
               thumbnailUrl,
               rvcModelUrl,
-              voiceId,
               rule,
             },
           });
@@ -84,22 +92,18 @@ export default async function handler(
             thumbnailUrl,
             url: rvcModelUrl,
             userId: user.id,
-            voiceId: +voiceId,
             rule,
+            sourceType: VOICE_MODEL_SOURCE_TYPE.UPLOADED,
           },
         });
 
-        // metadeta.jsonを作成
-        const tokenURL = await contractService.createTokenUrl({
-          name: title,
-          description,
-          image: thumbnailUrl,
-          voiceId: +voiceId,
-          voiceModelId: savedVoiceModel.id,
-        });
-
-        // コントラクトに承認をリクエスト
-        await contractService.acceptAddMintableItem(voiceId, tokenURL);
+        // transactionが承認されてからaccept処理を行う
+        await contractService.addPendingTransaction(
+          transactionHash,
+          actionUserAddress,
+          contractService.TRANSACTION_TYPE.ADD_MINTABLE_ITEM,
+          { voiceModelId: savedVoiceModel.id }
+        );
 
         res.status(200).json({ savedVoiceModel });
       } catch (e) {

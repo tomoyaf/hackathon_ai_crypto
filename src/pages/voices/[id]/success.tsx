@@ -4,11 +4,39 @@ import { Layout } from "@/components";
 import { useSearchParams } from "next/navigation";
 import { createPolygonScanUrl } from "@/utils/contractFrontend";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
+import * as contractUtils from "@/utils/contractFrontend";
 
 export default function SuccessPage() {
+  const readOnlyContract = contractUtils.connectReadOnlyContract();
   const searchParams = useSearchParams();
-  const tokenId = searchParams?.get("tokenId");
   const txHash = searchParams?.get("txHash");
+  const [tokenId, setTokenId] = React.useState<number>();
+  const timerId = React.useRef<number>();
+
+  const checkTransaction = async () => {
+    if (!txHash) return false;
+    const tx = await readOnlyContract.provider.getTransaction(txHash);
+    if (tx.confirmations < 1) return false;
+    timerId.current && clearInterval(timerId.current);
+
+    const receipt = await readOnlyContract.provider.getTransactionReceipt(
+      txHash
+    );
+    const { tokenId } = contractUtils.extractMintedArgsFromTxResult(receipt);
+    tokenId && setTokenId(tokenId);
+    return true;
+  };
+
+  React.useEffect(() => {
+    (async () => {
+      const isChecked = await checkTransaction();
+      if (isChecked) return;
+      timerId.current = window.setInterval(() => checkTransaction(), 1000 * 2);
+    })();
+    return () => {
+      timerId.current && clearInterval(timerId.current);
+    };
+  }, [txHash]);
 
   return (
     <k.div
@@ -36,7 +64,8 @@ export default function SuccessPage() {
 
         <k.div>
           <k.p fontSize="0.85rem" opacity="0.7">
-            発行したNFTの情報です! ご確認ください。
+            発行したNFTの情報です!
+            ご確認ください。トランザクションが完了した後、TokenIDが表示されます。
           </k.p>
         </k.div>
 
@@ -51,17 +80,32 @@ export default function SuccessPage() {
             value={process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}
           />
         </k.div>
-        <k.div display="flex" flexDir="column" gap="4px">
-          <k.span fontSize="0.85rem">TokenID</k.span>
-          <k.input
-            type="text"
-            p="4px 8px"
-            borderRadius="4px"
-            color="#2e3855"
-            readOnly
-            value={tokenId ?? ""}
-          />
-        </k.div>
+        {tokenId ? (
+          <k.div display="flex" flexDir="column" gap="4px">
+            <k.span fontSize="0.85rem">TokenID</k.span>
+            <k.input
+              type="text"
+              p="4px 8px"
+              borderRadius="4px"
+              color="#2e3855"
+              readOnly
+              value={tokenId ?? ""}
+            />
+          </k.div>
+        ) : (
+          <k.div display="flex" flexDir="column" gap="4px">
+            <k.span fontSize="0.85rem">TokenID</k.span>
+            <k.input
+              type="text"
+              p="4px 8px"
+              borderRadius="4px"
+              color="#2e3855"
+              readOnly
+              disabled
+              value="トランザクション待機中..."
+            />
+          </k.div>
+        )}
 
         <k.a
           borderRadius="8px"

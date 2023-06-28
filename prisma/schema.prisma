@@ -84,11 +84,13 @@ model VoiceModel {
   id      String    @id @default(cuid())
   url     String?
   userId  String
-  voiceId Int @unique
+  voiceId Int? @unique
   title String
   thumbnailUrl String
   description String
   rule String
+  audioUrl String?
+  sourceType Int @default(1) // 1: generated, 2: uploaded
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   musics Music[]
   userVoiceModelPurchase UserVoiceModelPurchase?
@@ -173,5 +175,15 @@ model VoiceModelTrainJob {
 model WalletAuthKey {
   address String @id // wallet address
   authKey String
+  createdAt DateTime @default(now())
+}
+
+model ContractTransaction {
+  id String @id @default(cuid())
+  transactionHash String
+  actionUserAddress String
+  type Int
+  status Int @default(1) // pending
+  voiceModelId String?
   createdAt DateTime @default(now())
 }

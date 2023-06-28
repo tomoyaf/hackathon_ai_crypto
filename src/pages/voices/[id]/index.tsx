@@ -74,14 +74,10 @@ export default function IndexPage() {
         maxFeePerGas: gasPrice,
         type: 2, // EIP-1559
       });
-      const receipt = await tx.wait();
-      const { tokenId } = contractUtils.extractMintedArgsFromTxResult(receipt);
       toast.success("購入しました");
 
       // トランザクション結果
-      router.push(
-        `/voices/${data.id}/success?tokenId=${tokenId}&txHash=${receipt.transactionHash}`
-      );
+      router.push(`/voices/${data.id}/success?txHash=${tx.hash}`);
     } catch (error) {
       console.error(error);
       toast.error("購入に失敗しました");

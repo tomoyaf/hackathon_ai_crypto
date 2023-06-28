@@ -107,20 +107,17 @@ export default function PostPage() {
       }
     );
 
-    const receipt = await tx.wait();
-    const voiceId = contractUtils.extractVoiceIdFromTxResult(receipt);
-
-    if (voiceId == null)
-      throw new Error("コントラクターへの登録に失敗しました");
-
-    return voiceId;
+    return {
+      transactionHash: tx.hash,
+      actionUserAddress: await contract.signer.getAddress(),
+    };
   };
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     try {
-      const voiceId = await toast.promise(registerToContract(), {
+      const contractResult = await toast.promise(registerToContract(), {
         loading: "コントラクターと通信中です",
         success: "コントラクターへの登録が完了しました",
         error: (e) => {
@@ -139,7 +136,7 @@ export default function PostPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...formState, voiceId }),
+          body: JSON.stringify({ ...formState, ...contractResult }),
         }),
         {
           loading: "アップロード中です",
